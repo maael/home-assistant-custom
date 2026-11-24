@@ -58,6 +58,8 @@ The card uses the entity friendly name, unit, and icon when their overrides are 
 | `show_graphs` | `true` | Default graph visibility. |
 | `graph_opacity` | `0.8` | Default line opacity, from 0 to 1. |
 | `graph_fill_opacity` | `0.14` | Default area-fill opacity, from 0 to 1. |
+| `value_position` | `right` | Current-value position: `right` or `center`. Center places it in the horizontal and vertical middle of the graph. |
+| `value_size` | theme default | Current-value font size in pixels, from 8 to 96. |
 | `metrics` | required | Non-empty list of metric definitions. |
 
 ## Metric options
@@ -79,6 +81,17 @@ The card uses the entity friendly name, unit, and icon when their overrides are 
 | `show_graph` | card `show_graphs` | Per-metric graph visibility. |
 | `graph_opacity` | card value | Per-metric line opacity. |
 | `graph_fill_opacity` | card value | Per-metric fill opacity. |
+| `value_position` | card value | Per-metric `right` or `center` value position. |
+| `value_size` | card value | Per-metric value font size in pixels. |
+
+Example with a large value centred in the graph:
+
+```yaml
+value_position: center
+value_size: 36
+```
+
+Both options can also be set on an individual metric.
 
 Example threshold configuration:
 

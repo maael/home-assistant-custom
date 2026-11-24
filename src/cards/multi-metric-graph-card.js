@@ -21,12 +21,14 @@ const STYLE = `
   .label { min-width:0; display:flex; align-items:center; gap:6px; color:var(--secondary-text-color); }
   .icon { flex:0 0 auto; width:20px; height:20px; --mdc-icon-size:20px; }
   .name { min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:12px; font-weight:600; letter-spacing:.02em; text-transform:uppercase; text-align:left; }
-  .value { flex:0 0 auto; margin-left:auto; white-space:nowrap; text-align:right; font-size:var(--ha-font-size-xl, 24px); line-height:1.1; font-weight:500; font-variant-numeric:tabular-nums; }
+  .value { flex:0 0 auto; margin-left:auto; white-space:nowrap; text-align:right; font-size:var(--value-size, var(--ha-font-size-xl, 24px)); line-height:1.1; font-weight:500; font-variant-numeric:tabular-nums; }
+  .info.centered-value { inset:0; align-items:flex-start; }
+  .info.centered-value .value { position:absolute; inset:0; display:grid; place-items:center; margin:0; text-align:center; pointer-events:none; }
   .fixed-height .metric { min-height:0; }
   .fixed-height .chart { height:auto; flex:1 1 auto; }
   .fixed-height.short .info { min-height:30px; padding:3px 2px; gap:5px; }
   .fixed-height.short .name { font-size:10px; }
-  .fixed-height.short .value { font-size:18px; }
+  .fixed-height.short .value { font-size:var(--value-size, 18px); }
   .fixed-height.short .icon { width:16px; height:16px; --mdc-icon-size:16px; }
   .fixed-height.short .chart { margin:4px 6px; }
   .graph { display:block; width:100%; height:100%; pointer-events:none; }
@@ -177,6 +179,8 @@ export class MultiMetricGraphCard extends HTMLElement {
     const iconName = metric.icon ?? state?.attributes?.icon;
     const showIcon = metric.show_icon ?? this._config.show_icons;
     const showName = metric.show_name ?? this._config.show_names;
+    const valuePosition = metric.value_position ?? this._config.value_position;
+    const valueSize = metric.value_size ?? this._config.value_size;
     const color = colorForValue(formatted.value, metric.color, metric.color_thresholds);
     const hours = metric.hours_to_show ?? this._config.hours_to_show;
     const node = this._interactive(metric.entity, `${name}: ${formatted.full}`);
@@ -184,7 +188,7 @@ export class MultiMetricGraphCard extends HTMLElement {
 
     const chart = document.createElement("div"); chart.className = "chart";
     if (metric.show_graph ?? this._config.show_graphs) chart.append(this._renderGraph(metric, state, color));
-    const info = document.createElement("div"); info.className = "info";
+    const info = document.createElement("div"); info.className = `info${valuePosition === "center" ? " centered-value" : ""}`;
     if ((showIcon && iconName) || showName) {
       const label = document.createElement("div"); label.className = "label";
       if (showIcon && iconName) {
@@ -196,6 +200,7 @@ export class MultiMetricGraphCard extends HTMLElement {
       info.append(label);
     }
     const value = document.createElement("span"); value.className = "value"; value.textContent = formatted.text; value.style.color = color;
+    if (valueSize !== undefined) value.style.setProperty("--value-size", `${valueSize}px`);
     info.append(value); chart.append(info); node.append(chart);
     return node;
   }
@@ -233,7 +238,7 @@ export class MultiMetricGraphCard extends HTMLElement {
 const EDITOR_STYLE = `
   :host { display:block; } .form { display:grid; gap:12px; padding:8px 0; }
   label { display:grid; gap:5px; color:var(--primary-text-color); font-size:13px; }
-  input, button { box-sizing:border-box; min-height:40px; padding:8px; color:var(--primary-text-color); background:var(--card-background-color); border:1px solid var(--divider-color); border-radius:6px; }
+  input, select, button { box-sizing:border-box; min-height:40px; padding:8px; color:var(--primary-text-color); background:var(--card-background-color); border:1px solid var(--divider-color); border-radius:6px; }
   .row { display:grid; grid-template-columns:1fr 1fr; gap:8px; } .list { display:grid; gap:8px; }
   .item { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr) auto; gap:6px; align-items:end; }
   h4 { margin:8px 0 0; } button { cursor:pointer; }
@@ -246,11 +251,12 @@ export class MultiMetricGraphCardEditor extends HTMLElement {
   _emit(config) { this._config = config; this.dispatchEvent(new CustomEvent("config-changed", { bubbles: true, composed: true, detail: { config } })); this._render(); }
   _render() {
     if (!this._config) return;
-    this.shadowRoot.innerHTML = `<style>${EDITOR_STYLE}</style><div class="form"><label>Title<input data-key="title" value="${this._escape(this._config.title || "")}"></label><div class="row"><label>Columns<input data-key="columns" type="number" min="1" max="12" value="${this._config.columns ?? 3}"></label><label>Card height (optional)<input data-key="card_height" type="number" min="60" max="1000" placeholder="Automatic" value="${this._config.card_height ?? ""}"></label></div><div class="row"><label>Graph height<input data-key="graph_height" type="number" min="16" max="300" value="${this._config.graph_height ?? 120}"></label><label>History hours<input data-key="hours_to_show" type="number" min="0.25" step="0.25" value="${this._config.hours_to_show ?? 24}"></label></div><div class="row"><label><span><input data-key="show_icons" type="checkbox" ${this._config.show_icons ? "checked" : ""}> Show icons</span></label><label><span><input data-key="show_names" type="checkbox" ${this._config.show_names !== false ? "checked" : ""}> Show metric names</span></label></div><label><span><input data-key="show_title" type="checkbox" ${this._config.show_title ? "checked" : ""}> Show card title</span></label><h4>Metrics</h4><div class="list metrics"></div><button class="add-metric">Add metric</button></div>`;
+    this.shadowRoot.innerHTML = `<style>${EDITOR_STYLE}</style><div class="form"><label>Title<input data-key="title" value="${this._escape(this._config.title || "")}"></label><div class="row"><label>Columns<input data-key="columns" type="number" min="1" max="12" value="${this._config.columns ?? 3}"></label><label>Card height (optional)<input data-key="card_height" type="number" min="60" max="1000" placeholder="Automatic" value="${this._config.card_height ?? ""}"></label></div><div class="row"><label>Graph height<input data-key="graph_height" type="number" min="16" max="300" value="${this._config.graph_height ?? 120}"></label><label>History hours<input data-key="hours_to_show" type="number" min="0.25" step="0.25" value="${this._config.hours_to_show ?? 24}"></label></div><div class="row"><label>Value position<select data-key="value_position"><option value="right">Right</option><option value="center">Center</option></select></label><label>Value size (px)<input data-key="value_size" type="number" min="8" max="96" placeholder="Theme default" value="${this._config.value_size ?? ""}"></label></div><div class="row"><label><span><input data-key="show_icons" type="checkbox" ${this._config.show_icons ? "checked" : ""}> Show icons</span></label><label><span><input data-key="show_names" type="checkbox" ${this._config.show_names !== false ? "checked" : ""}> Show metric names</span></label></div><label><span><input data-key="show_title" type="checkbox" ${this._config.show_title ? "checked" : ""}> Show card title</span></label><h4>Metrics</h4><div class="list metrics"></div><button class="add-metric">Add metric</button></div>`;
+    this.shadowRoot.querySelector('[data-key="value_position"]').value = this._config.value_position || "right";
     this._renderItems(this._config.metrics || []);
     this.shadowRoot.querySelectorAll("[data-key]").forEach((input) => input.addEventListener("change", () => {
       const config = structuredClone(this._config); const key = input.dataset.key;
-      config[key] = input.type === "checkbox" ? input.checked : input.type === "number" ? (key === "card_height" && input.value === "" ? null : Number(input.value)) : input.value || (key === "title" ? null : input.value); this._emit(config);
+      config[key] = input.type === "checkbox" ? input.checked : input.type === "number" ? (["card_height", "value_size"].includes(key) && input.value === "" ? null : Number(input.value)) : input.value || (key === "title" ? null : input.value); this._emit(config);
     }));
     this.shadowRoot.querySelector(".add-metric").onclick = () => { const config = structuredClone(this._config); config.metrics ||= []; config.metrics.push({ entity: "sensor.example" }); this._emit(config); };
   }

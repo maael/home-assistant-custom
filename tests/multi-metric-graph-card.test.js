@@ -97,6 +97,19 @@ test("supports title, missing history, unavailable values and more-info keyboard
   card.remove();
 });
 
+test("supports centered values and configurable value sizes", () => {
+  const card = document.createElement("multi-metric-graph-card");
+  card.setConfig(config({ value_position: "center", value_size: 36 }));
+  assert.equal(card.shadowRoot.querySelectorAll(".info.centered-value").length, 3);
+  assert.equal(card.shadowRoot.querySelector(".value").style.getPropertyValue("--value-size"), "36px");
+  card.setConfig(config({ value_position: "center", value_size: 36, metrics: [
+    { entity: "sensor.download", value_position: "right", value_size: 28 },
+    { entity: "sensor.upload" },
+  ] }));
+  assert.equal(card.shadowRoot.querySelectorAll(".info.centered-value").length, 1);
+  assert.equal(card.shadowRoot.querySelector(".value").style.getPropertyValue("--value-size"), "28px");
+});
+
 test("supports explicit normal and compact total card heights", () => {
   const card = document.createElement("multi-metric-graph-card");
   card.setConfig(config({ card_height: 260 }));
@@ -119,6 +132,8 @@ test("provides an editor and Sections sizing metadata", async () => {
   assert.equal(editor.shadowRoot.querySelectorAll("ha-entity-picker").length, 3);
   assert.ok(editor.shadowRoot.querySelector('[data-key="card_height"]'));
   assert.ok(editor.shadowRoot.querySelector('[data-key="show_names"]'));
+  assert.ok(editor.shadowRoot.querySelector('[data-key="value_position"]'));
+  assert.ok(editor.shadowRoot.querySelector('[data-key="value_size"]'));
   const card = document.createElement("multi-metric-graph-card");
   card.setConfig(config());
   assert.ok(card.getCardSize() >= 3);

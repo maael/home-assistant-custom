@@ -13,6 +13,8 @@ export const DEFAULT_MULTI_METRIC_GRAPH_CONFIG = Object.freeze({
   show_graphs: true,
   graph_opacity: 0.8,
   graph_fill_opacity: 0.14,
+  value_position: "right",
+  value_size: null,
   metrics: [],
 });
 
@@ -48,6 +50,8 @@ export function mergeMultiMetricGraphConfig(config) {
   merged.refresh_interval = number(merged.refresh_interval, 60, 10, 3600);
   merged.graph_opacity = number(merged.graph_opacity, 0.8, 0, 1);
   merged.graph_fill_opacity = number(merged.graph_fill_opacity, 0.14, 0, 1);
+  if (!["right", "center"].includes(merged.value_position)) throw new Error("value_position must be 'right' or 'center'.");
+  merged.value_size = optionalSize(merged.value_size, "value_size");
   return merged;
 }
 
@@ -62,6 +66,9 @@ function normalizeMetric(metric, index) {
   normalized.show_graph = metric.show_graph === undefined ? undefined : Boolean(metric.show_graph);
   normalized.graph_opacity = metric.graph_opacity === undefined ? undefined : number(metric.graph_opacity, 0.8, 0, 1);
   normalized.graph_fill_opacity = metric.graph_fill_opacity === undefined ? undefined : number(metric.graph_fill_opacity, 0.14, 0, 1);
+  if (metric.value_position !== undefined && !["right", "center"].includes(metric.value_position)) throw new Error(`metrics[${index}].value_position must be 'right' or 'center'.`);
+  normalized.value_position = metric.value_position;
+  normalized.value_size = optionalSize(metric.value_size, `metrics[${index}].value_size`);
   for (const bound of ["min", "max"]) {
     if (metric[bound] !== undefined && !Number.isFinite(Number(metric[bound]))) throw new Error(`metrics[${index}].${bound} must be numeric.`);
     if (metric[bound] !== undefined) normalized[bound] = Number(metric[bound]);
@@ -69,6 +76,12 @@ function normalizeMetric(metric, index) {
   if (normalized.min !== undefined && normalized.max !== undefined && normalized.min >= normalized.max) throw new Error(`metrics[${index}].min must be less than max.`);
   normalized.color_thresholds = normalizeThresholds(metric.color_thresholds, `metrics[${index}].color_thresholds`);
   return normalized;
+}
+
+function optionalSize(value, path) {
+  if (value === undefined || value === null || value === "") return undefined;
+  if (!Number.isFinite(Number(value))) throw new Error(`${path} must be numeric or null.`);
+  return number(value, 24, 8, 96, true);
 }
 
 function normalizeThresholds(value, path) {

@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.4] - 2026-11-24
+
+### Added
+
+- Added card-level and per-metric `value_position` controls, including horizontal and vertical graph centring.
+- Added card-level and per-metric `value_size` controls for value text from 8px to 96px.
+
 ## [0.3.3] - 2026-11-24
 
 ### Changed
@@ -94,6 +101,7 @@
 - Responsive poster grid, progress/status display, polling, partial-failure handling, and configuration options.
 - Synthetic fixtures, transformation and mocked-browser tests, CI, release automation, and installation documentation.
 
+[0.3.4]: https://github.com/maael/home-assistant-custom/releases/tag/v0.3.4
 [0.3.3]: https://github.com/maael/home-assistant-custom/releases/tag/v0.3.3
 [0.3.2]: https://github.com/maael/home-assistant-custom/releases/tag/v0.3.2
 [0.3.1]: https://github.com/maael/home-assistant-custom/releases/tag/v0.3.1
