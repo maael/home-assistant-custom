@@ -56,6 +56,13 @@ test("registers once, polls through callWS, renders a 4x2 scrollable card, and c
   assert.match(card.shadowRoot.textContent, /S03E09/);
   assert.match(card.shadowRoot.textContent, /8m 16s/);
   assert.match(card.shadowRoot.textContent, /Paused/);
+  const renderedItems = [...card.shadowRoot.querySelectorAll(".item")];
+  const movieItem = renderedItems.find((item) => item.getAttribute("aria-label").startsWith("Movie,"));
+  const tvItem = renderedItems.find((item) => item.getAttribute("aria-label").startsWith("Show,"));
+  assert.equal(movieItem.querySelector(".episode").hidden, true);
+  assert.equal(movieItem.querySelector(".eta").textContent, "8m 16s");
+  assert.equal(tvItem.querySelector(".episode").hidden, false);
+  assert.equal(tvItem.querySelector(".episode").textContent, "S03E09");
   const summary = card.shadowRoot.querySelector(".summary");
   assert.equal(card.shadowRoot.querySelector(".heading").textContent, "Downloads");
   assert.deepEqual([...summary.querySelectorAll("ha-icon")].map((icon) => icon.getAttribute("icon")), ["mdi:movie-open", "mdi:television", "mdi:magnet"]);

@@ -12,8 +12,9 @@ export const DEFAULT_CONFIG = Object.freeze({
     grayscale_inactive: true, inactive_opacity: 0.65, show_pause_icon: true,
   },
   behaviour: {
-    refresh_interval: 10, sort_active_first: true, hide_completed: true,
-    hide_inactive: false, scrollable: true,
+    refresh_interval: 10, max_items: 8, sort_download_speed: true,
+    sort_active_first: true, hide_completed: true, hide_inactive: false,
+    scrollable: true,
   },
 });
 
@@ -60,6 +61,7 @@ export function mergeConfig(config = {}) {
   a.progress_decimals = number(a.progress_decimals, 1, 0, 3, true);
   a.inactive_opacity = number(a.inactive_opacity, 0.65, 0.1, 1);
   merged.behaviour.refresh_interval = number(merged.behaviour.refresh_interval, 10, 2, 3600);
+  merged.behaviour.max_items = number(merged.behaviour.max_items, 8, 0, 500, true);
   const speedEntity = merged.qbittorrent.download_speed_entity;
   if (speedEntity !== null && speedEntity !== undefined && (typeof speedEntity !== "string" || !speedEntity.startsWith("sensor."))) {
     throw new Error("qbittorrent.download_speed_entity must be a sensor entity ID.");
@@ -247,10 +249,16 @@ export function buildMediaDownloads({ movies = [], shows = [], torrents = [] }, 
   if (behaviour.hide_completed !== false) items = items.filter((item) => !item.completed);
   if (behaviour.hide_inactive === true) items = items.filter((item) => item.active);
   items.sort((a, b) => {
+    if (behaviour.sort_download_speed !== false) {
+      if (a.speed !== null && b.speed !== null && a.speed !== b.speed) return b.speed - a.speed;
+      if ((a.speed ?? 0) > 0 && b.speed === null) return -1;
+      if ((b.speed ?? 0) > 0 && a.speed === null) return 1;
+    }
     if (behaviour.sort_active_first !== false && a.active !== b.active) return a.active ? -1 : 1;
     return a.title.localeCompare(b.title, undefined, { sensitivity: "base" }) || a.hash.localeCompare(b.hash);
   });
-  return items;
+  const maxItems = behaviour.max_items ?? DEFAULT_CONFIG.behaviour.max_items;
+  return maxItems > 0 ? items.slice(0, maxItems) : items;
 }
 
 export function serviceCallMessage(domain, source) {

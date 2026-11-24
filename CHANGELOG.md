@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.1.3] - 2026-04-13
+
+### Added
+
+- Overall `max_items` display limit, defaulting to eight with `0` for unlimited.
+- Descending per-torrent download-speed ordering when the action response provides speed fields.
+
+### Changed
+
+- Movie ETA/status now sits directly below the poster without an empty TV episode line.
+
 ## [0.1.2] - 2026-04-13
 
 ### Added
@@ -24,6 +35,7 @@
 - Responsive poster grid, progress/status display, polling, partial-failure handling, and configuration options.
 - Synthetic fixtures, transformation and mocked-browser tests, CI, release automation, and installation documentation.
 
+[0.1.3]: https://github.com/maael/home-assistant-custom/releases/tag/v0.1.3
 [0.1.2]: https://github.com/maael/home-assistant-custom/releases/tag/v0.1.2
 [0.1.1]: https://github.com/maael/home-assistant-custom/releases/tag/v0.1.1
 [0.1.0]: https://github.com/maael/home-assistant-custom/releases/tag/v0.1.0

@@ -67,6 +67,25 @@ test("parses normal and long-hour ETAs but rejects huge sentinels", () => {
   assert.equal(formatEta(288000), "3d 8h");
 });
 
+test("sorts by reported per-torrent speed and applies the overall item limit", () => {
+  const input = {
+    movies: [
+      { title: "Slow", download_id: "a" },
+      { title: "Fast", download_id: "b" },
+      { title: "Unknown speed", download_id: "c" },
+    ],
+    torrents: [
+      { id: "a", status: "downloading", dlspeed: 100 },
+      { id: "b", status: "downloading", dlspeed: 500 },
+      { id: "c", status: "downloading" },
+    ],
+  };
+  assert.deepEqual(buildMediaDownloads(input, { max_items: 2 }).map((item) => item.title), ["Fast", "Slow"]);
+  assert.equal(buildMediaDownloads(input, { max_items: 0 }).length, 3);
+  const manyMovies = Array.from({ length: 10 }, (_, index) => ({ title: `Movie ${index}`, download_id: `hash-${index}` }));
+  assert.equal(buildMediaDownloads({ movies: manyMovies }).length, 8);
+});
+
 test("filters completed and inactive downloads", () => {
   const input = {
     movies: [{ title: "Done", download_id: "a" }, { title: "Paused", download_id: "b" }],
@@ -81,6 +100,8 @@ test("merges defaults, validates values, and creates WebSocket service messages"
   assert.equal(config.title, false);
   assert.equal(config.appearance.columns, 6);
   assert.equal(config.appearance.rows, 0);
+  assert.equal(config.behaviour.max_items, 8);
+  assert.equal(config.behaviour.sort_download_speed, true);
   assert.equal(config.sonarr.action, "get_queue");
   assert.deepEqual(serviceCallMessage("radarr", config.radarr), {
     type: "call_service", domain: "radarr", service: "get_queue",

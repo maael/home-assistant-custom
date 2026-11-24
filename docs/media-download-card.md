@@ -26,7 +26,7 @@ The card accepts mappings or arrays, normal response envelopes, and entity-keyed
 2. Copy it to `<config>/www/home-assistant-custom.js`.
 3. If `www` was newly created, restart Home Assistant.
 4. Go to **Settings → Dashboards → Resources → Add resource**.
-5. Add `/local/home-assistant-custom.js?v=0.1.2` as **JavaScript module**.
+5. Add `/local/home-assistant-custom.js?v=0.1.3` as **JavaScript module**.
 6. Hard-refresh the browser.
 
 ## Minimal usable YAML
@@ -86,6 +86,8 @@ appearance:
   show_pause_icon: true
 behaviour:
   refresh_interval: 10
+  max_items: 8
+  sort_download_speed: true
   sort_active_first: true
   hide_completed: true
   hide_inactive: false
@@ -136,7 +138,9 @@ Each integration supports:
 | Option | Default | Description |
 | --- | --- | --- |
 | `refresh_interval` | `10` | Poll interval in seconds, clamped to 2–3600. Polling stops when detached and requests never overlap. |
-| `sort_active_first` | `true` | Put active downloads first, then sort deterministically by title/hash. |
+| `max_items` | `8` | Maximum poster items shown after filtering and sorting. Use `0` for unlimited. |
+| `sort_download_speed` | `true` | Put downloads with the highest reported per-torrent speed first. Current core qBittorrent responses omit this field, so the active/title fallback is used. |
+| `sort_active_first` | `true` | After speed ordering, put active downloads first, then sort deterministically by title/hash. |
 | `hide_completed` | `true` | Hide completed and seeding entries. |
 | `hide_inactive` | `false` | Hide all non-active entries. |
 | `scrollable` | `true` | Scroll vertically after the configured row count. If false, only `columns × rows` items are rendered. |
@@ -150,8 +154,9 @@ Each integration supports:
 - qBittorrent progress is interpreted as 0–100. Arr progress and then `size`/`size_left` are fallbacks.
 - Unmatched Arr entries show **Unknown status**, not Paused. Unrelated qBittorrent torrents are ignored.
 - Recognized download states include downloading, forcedDL, stalledDL, queuedDL, pausedDL, stoppedDL, checkingDL, metaDL, errors, and unknown values.
+- Movie ETA/status text is placed directly below the poster (or below the optional media title); movies do not reserve an empty TV episode line.
 - The header reports total qBittorrent download speed from `qbittorrent.download_speed_entity`. The card automatically detects a unique qBittorrent data-rate sensor named “Download speed”; configure the entity explicitly if detection is ambiguous. If future torrent action responses contain numeric speed fields, their sum is used as a fallback.
-- For individual torrent activity, a numeric speed field means zero is inactive and positive can be active subject to state. Current `get_torrents` responses omit per-torrent speed, so state remains a proxy and exact zero-speed detection is impossible.
+- For individual torrent activity and speed sorting, a numeric speed field means zero is inactive and positive can be active subject to state. Current `get_torrents` responses omit per-torrent speed, so state remains a proxy, exact zero-speed detection is impossible, and speed ordering falls back to active-first/title ordering.
 - ETA supports numeric seconds and `HH:MM:SS` with hours beyond 24. Null, `None`, invalid values, and estimates over 365 days (including observed sentinel values) become **Unknown ETA**. Arr `time_left` is a fallback.
 - Artwork permits only HTTP(S) URLs. Broken or absent posters get a text fallback.
 - Partial action failures retain the last good source data and mark the card **Stale**.
@@ -168,4 +173,4 @@ Each integration supports:
 
 ## Updates and rollback
 
-Use HACS's update flow, then reload the frontend. To roll back, open the HACS repository version/redownload menu and choose an earlier release. For manual installs, replace the JS file and increment the resource query string (for example `?v=0.1.3`) to bypass browser cache.
+Use HACS's update flow, then reload the frontend. To roll back, open the HACS repository version/redownload menu and choose an earlier release. For manual installs, replace the JS file and increment the resource query string (for example `?v=0.1.4`) to bypass browser cache.

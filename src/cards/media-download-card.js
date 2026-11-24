@@ -295,7 +295,7 @@ export class MediaDownloadCard extends HTMLElement {
     const icon = node.querySelector(".state-icon");
     icon.textContent = !item.active && a.show_pause_icon ? (ICONS[item.kind] || "?") : "";
     const title = node.querySelector(".title"); title.hidden = !a.show_title; title.textContent = item.title; title.title = item.title;
-    const episode = node.querySelector(".episode"); episode.hidden = !a.show_episode; episode.textContent = item.type === "tv" ? item.episode : "";
+    const episode = node.querySelector(".episode"); episode.hidden = !a.show_episode || item.type !== "tv"; episode.textContent = item.type === "tv" ? item.episode : "";
     const eta = node.querySelector(".eta"); eta.hidden = !a.show_eta;
     eta.textContent = item.active ? (item.eta === null ? "Unknown ETA" : formatEta(item.eta)) : item.label;
     eta.classList.toggle("error", item.error);
@@ -305,9 +305,9 @@ export class MediaDownloadCard extends HTMLElement {
     if (!this._config || this._grid.hidden) return;
     const rows = this._config.appearance.rows;
     if (!this._config.behaviour.scrollable || rows === 0) { this._grid.style.maxHeight = "none"; return; }
-    const first = this._grid.firstElementChild;
-    if (!first) return;
-    const height = first.getBoundingClientRect().height;
+    const children = [...this._grid.children];
+    if (!children.length) return;
+    const height = Math.max(...children.map((child) => child.getBoundingClientRect().height));
     this._grid.style.maxHeight = `${Math.ceil(height * rows + this._config.appearance.gap * (rows - 1) + 1)}px`;
   }
 }
