@@ -95,13 +95,19 @@ test("supports title, missing history, unavailable values and more-info keyboard
   card.remove();
 });
 
-test("supports an explicit total card height", () => {
+test("supports explicit normal and compact total card heights", () => {
   const card = document.createElement("multi-metric-graph-card");
   card.setConfig(config({ card_height: 260 }));
-  const root = card.shadowRoot.querySelector("ha-card");
+  let root = card.shadowRoot.querySelector("ha-card");
   assert.equal(root.className, "fixed-height");
   assert.equal(root.style.getPropertyValue("--card-height"), "260px");
   assert.equal(card.getCardSize(), 6);
+  card.setConfig(config({ card_height: 80, graph_height: 24 }));
+  root = card.shadowRoot.querySelector("ha-card");
+  assert.equal(root.className, "fixed-height short");
+  assert.equal(root.style.getPropertyValue("--card-height"), "80px");
+  assert.equal(root.style.getPropertyValue("--graph-height"), "24px");
+  assert.equal(card.getCardSize(), 2);
 });
 
 test("provides an editor and Sections sizing metadata", async () => {

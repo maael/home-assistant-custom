@@ -49,8 +49,8 @@ The card uses the entity friendly name, unit, and icon when their overrides are 
 | `title` | none | Optional card title. |
 | `show_title` | `false` | Display the configured title. |
 | `columns` | `3` | Number of graph columns, from 1 to 12. The card stacks them below 420 px. |
-| `graph_height` | `120` | Graph-area height in pixels when `card_height` is not set, clamped to 60–300. |
-| `card_height` | automatic | Optional total card height in pixels, clamped to 120–1000. Graphs expand to use the remaining height. |
+| `graph_height` | `120` | Graph-area height in pixels when `card_height` is not set, clamped to 16–300. |
+| `card_height` | automatic | Optional total card height in pixels, clamped to 60–1000. Graphs expand to use the remaining height. Heights below 120 use compact labels, values, icons, and spacing. |
 | `hours_to_show` | `24` | Default Recorder history window in hours, from 0.25 to 720. |
 | `refresh_interval` | `60` | History refresh interval in seconds, clamped to 10–3600. |
 | `show_icons` | `false` | Default icon visibility. |

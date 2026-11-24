@@ -25,6 +25,11 @@ const STYLE = `
   .chart { position:relative; height:var(--graph-height); min-height:0; margin:0 8px 8px; overflow:hidden; }
   .fixed-height .metric { min-height:0; }
   .fixed-height .chart { height:auto; flex:1 1 auto; }
+  .fixed-height.short .info { min-height:40px; padding:4px 8px 2px; column-gap:5px; }
+  .fixed-height.short .name { font-size:10px; }
+  .fixed-height.short .value { font-size:18px; }
+  .fixed-height.short .icon { width:16px; height:16px; --mdc-icon-size:16px; }
+  .fixed-height.short .chart { margin:0 6px 4px; }
   .graph { display:block; width:100%; height:100%; pointer-events:none; }
   .empty { position:absolute; inset:0; display:grid; place-items:center; color:var(--secondary-text-color); font-size:11px; opacity:.65; }
   @container (max-width:420px) {
@@ -149,6 +154,7 @@ export class MultiMetricGraphCard extends HTMLElement {
     card.style.setProperty("--graph-height", `${this._config.graph_height}px`);
     if (this._config.card_height) {
       card.classList.add("fixed-height");
+      if (this._config.card_height < 120) card.classList.add("short");
       card.style.setProperty("--card-height", `${this._config.card_height}px`);
     }
     if (this._config.show_title && this._config.title) {
@@ -238,7 +244,7 @@ export class MultiMetricGraphCardEditor extends HTMLElement {
   _emit(config) { this._config = config; this.dispatchEvent(new CustomEvent("config-changed", { bubbles: true, composed: true, detail: { config } })); this._render(); }
   _render() {
     if (!this._config) return;
-    this.shadowRoot.innerHTML = `<style>${EDITOR_STYLE}</style><div class="form"><label>Title<input data-key="title" value="${this._escape(this._config.title || "")}"></label><div class="row"><label>Columns<input data-key="columns" type="number" min="1" max="12" value="${this._config.columns ?? 3}"></label><label>Card height (optional)<input data-key="card_height" type="number" min="120" max="1000" placeholder="Automatic" value="${this._config.card_height ?? ""}"></label></div><div class="row"><label>Graph height<input data-key="graph_height" type="number" min="60" max="300" value="${this._config.graph_height ?? 120}"></label><label>History hours<input data-key="hours_to_show" type="number" min="0.25" step="0.25" value="${this._config.hours_to_show ?? 24}"></label></div><div class="row"><label><span><input data-key="show_icons" type="checkbox" ${this._config.show_icons ? "checked" : ""}> Show icons</span></label><label><span><input data-key="show_title" type="checkbox" ${this._config.show_title ? "checked" : ""}> Show title</span></label></div><h4>Metrics</h4><div class="list metrics"></div><button class="add-metric">Add metric</button></div>`;
+    this.shadowRoot.innerHTML = `<style>${EDITOR_STYLE}</style><div class="form"><label>Title<input data-key="title" value="${this._escape(this._config.title || "")}"></label><div class="row"><label>Columns<input data-key="columns" type="number" min="1" max="12" value="${this._config.columns ?? 3}"></label><label>Card height (optional)<input data-key="card_height" type="number" min="60" max="1000" placeholder="Automatic" value="${this._config.card_height ?? ""}"></label></div><div class="row"><label>Graph height<input data-key="graph_height" type="number" min="16" max="300" value="${this._config.graph_height ?? 120}"></label><label>History hours<input data-key="hours_to_show" type="number" min="0.25" step="0.25" value="${this._config.hours_to_show ?? 24}"></label></div><div class="row"><label><span><input data-key="show_icons" type="checkbox" ${this._config.show_icons ? "checked" : ""}> Show icons</span></label><label><span><input data-key="show_title" type="checkbox" ${this._config.show_title ? "checked" : ""}> Show title</span></label></div><h4>Metrics</h4><div class="list metrics"></div><button class="add-metric">Add metric</button></div>`;
     this._renderItems(this._config.metrics || []);
     this.shadowRoot.querySelectorAll("[data-key]").forEach((input) => input.addEventListener("change", () => {
       const config = structuredClone(this._config); const key = input.dataset.key;

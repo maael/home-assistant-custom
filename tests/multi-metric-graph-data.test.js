@@ -26,7 +26,7 @@ test("normalizes card and per-metric graph options", () => {
     }],
   });
   assert.equal(config.columns, 12);
-  assert.equal(config.graph_height, 60);
+  assert.equal(config.graph_height, 20);
   assert.equal(config.card_height, 240);
   assert.equal(config.graph_opacity, 1);
   assert.equal(config.graph_fill_opacity, 0);
@@ -34,5 +34,7 @@ test("normalizes card and per-metric graph options", () => {
   assert.equal(config.metrics[0].show_icon, true);
   assert.equal(config.metrics[0].show_graph, false);
   assert.deepEqual(config.metrics[0].color_thresholds.map((entry) => entry.value), [20, 50]);
+  assert.equal(mergeMultiMetricGraphConfig({ graph_height: 1, card_height: 30, metrics: [{ entity: "sensor.download" }] }).graph_height, 16);
+  assert.equal(mergeMultiMetricGraphConfig({ graph_height: 1, card_height: 30, metrics: [{ entity: "sensor.download" }] }).card_height, 60);
   assert.throws(() => mergeMultiMetricGraphConfig({ card_height: "tall", metrics: [{ entity: "sensor.download" }] }), /card_height/);
 });
