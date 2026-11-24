@@ -6,12 +6,13 @@ import {
 const STYLE = `
   :host { display:block; container-type:inline-size; }
   ha-card { overflow:hidden; }
-  .header { display:flex; align-items:baseline; gap:12px; padding:16px 16px 8px; white-space:nowrap; }
+  .header { display:flex; align-items:center; gap:12px; padding:16px 16px 8px; white-space:nowrap; }
   .heading { flex:0 0 auto; font-size:var(--ha-card-header-font-size, 20px); font-weight:500; color:var(--primary-text-color); }
   .summary { min-width:0; flex:1 1 auto; display:flex; align-items:center; justify-content:flex-end; gap:5px; overflow:hidden; font-size:12px; color:var(--secondary-text-color); }
-  .header.titleless .summary { justify-content:flex-start; }
-  .stat { display:inline-flex; flex:0 0 auto; align-items:center; gap:2px; }
-  .stat ha-icon { --mdc-icon-size:14px; width:14px; height:14px; }
+  .header.titleless .summary { justify-content:center; }
+  .stat { display:inline-flex; flex:0 0 auto; align-items:center; gap:3px; height:16px; line-height:16px; }
+  .stat ha-icon { display:block; flex:0 0 14px; --mdc-icon-size:14px; width:14px; height:14px; }
+  .stat-value { display:block; line-height:16px; font-variant-numeric:tabular-nums; }
   .separator { flex:0 0 auto; opacity:.7; }
   .speed { min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
   .stale { flex:0 0 auto; color:var(--warning-color, #ff9800); font-weight:600; }
@@ -199,6 +200,7 @@ export class MediaDownloadCard extends HTMLElement {
       icon.setAttribute("icon", iconName);
       icon.setAttribute("aria-hidden", "true");
       const value = document.createElement("span");
+      value.className = "stat-value";
       value.textContent = count;
       stat.append(icon, value);
       this._summary.append(stat);

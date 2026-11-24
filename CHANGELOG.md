@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.2] - 2026-11-24
+
+### Changed
+
+- Centred the Media Download Card summary/status row when `title: false` is used.
+- Vertically aligned summary icons and numeric counts with consistent line height and tabular numerals.
+
 ## [0.2.1] - 2026-11-24
 
 ### Fixed
@@ -58,6 +65,7 @@
 - Responsive poster grid, progress/status display, polling, partial-failure handling, and configuration options.
 - Synthetic fixtures, transformation and mocked-browser tests, CI, release automation, and installation documentation.
 
+[0.2.2]: https://github.com/maael/home-assistant-custom/releases/tag/v0.2.2
 [0.2.1]: https://github.com/maael/home-assistant-custom/releases/tag/v0.2.1
 [0.2.0]: https://github.com/maael/home-assistant-custom/releases/tag/v0.2.0
 [0.1.3]: https://github.com/maael/home-assistant-custom/releases/tag/v0.1.3

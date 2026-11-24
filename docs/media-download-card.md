@@ -26,7 +26,7 @@ The card accepts mappings or arrays, normal response envelopes, and entity-keyed
 2. Copy it to `<config>/www/home-assistant-custom.js`.
 3. If `www` was newly created, restart Home Assistant.
 4. Go to **Settings → Dashboards → Resources → Add resource**.
-5. Add `/local/home-assistant-custom.js?v=0.2.1` as **JavaScript module**.
+5. Add `/local/home-assistant-custom.js?v=0.2.2` as **JavaScript module**.
 6. Hard-refresh the browser.
 
 ## Minimal usable YAML
@@ -147,8 +147,8 @@ Each integration supports:
 
 ## Matching and display behavior
 
-- The summary uses Home Assistant Material Design icons for movies, TV shows, and torrents. Hovering the row exposes the full text summary.
-- Set `title: false` to use the summary as the only header content.
+- The summary uses vertically aligned Home Assistant Material Design icons and tabular numeric counts for movies, TV shows, and torrents. Hovering the row exposes the full text summary.
+- Set `title: false` to use the summary as the only header content; the titleless summary is centred across the card.
 - Joins use torrent IDs/hashes only, after trimming and lowercasing. Titles are never used for matching.
 - Duplicate Arr entries sharing a hash are combined; TV episode labels are retained and sorted.
 - qBittorrent progress is interpreted as 0–100. Arr progress and then `size`/`size_left` are fallbacks.
@@ -173,4 +173,4 @@ Each integration supports:
 
 ## Updates and rollback
 
-Use HACS's update flow, then reload the frontend. To roll back, open the HACS repository version/redownload menu and choose an earlier release. For manual installs, replace the JS file and increment the resource query string (for example `?v=0.2.1`) to bypass browser cache.
+Use HACS's update flow, then reload the frontend. To roll back, open the HACS repository version/redownload menu and choose an earlier release. For manual installs, replace the JS file and increment the resource query string (for example `?v=0.2.2`) to bypass browser cache.

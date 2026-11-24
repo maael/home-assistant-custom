@@ -66,6 +66,8 @@ test("registers once, polls through callWS, renders a 4x2 scrollable card, and c
   const summary = card.shadowRoot.querySelector(".summary");
   assert.equal(card.shadowRoot.querySelector(".heading").textContent, "Downloads");
   assert.deepEqual([...summary.querySelectorAll("ha-icon")].map((icon) => icon.getAttribute("icon")), ["mdi:movie-open", "mdi:television", "mdi:magnet"]);
+  assert.deepEqual([...summary.querySelectorAll(".stat-value")].map((value) => value.textContent), ["1", "1", "2"]);
+  assert.match(card.shadowRoot.querySelector("style").textContent, /\.stat-value \{ display:block; line-height:16px;/);
   assert.match(summary.title, /1 movie · 1 TV show · 2 torrents · Download speed 12.4 MB\/s/);
   card.hass = { ...card._hass, states: { ...card._hass.states, "sensor.qbittorrent_download_speed": { state: "8.1", attributes: { unit_of_measurement: "MB/s" } } } };
   assert.match(summary.textContent, /↓ 8.1 MB\/s/);
@@ -93,5 +95,6 @@ test("keeps last good partial data and visibly marks it stale", async () => {
   assert.match(card.shadowRoot.querySelector(".summary").textContent, /Stale \(qbittorrent\)/);
   assert.equal(card.shadowRoot.querySelector(".heading").hidden, true);
   assert.equal(card.shadowRoot.querySelector(".header").classList.contains("titleless"), true);
+  assert.match(card.shadowRoot.querySelector("style").textContent, /\.header\.titleless \.summary \{ justify-content:center; \}/);
   card.remove();
 });
