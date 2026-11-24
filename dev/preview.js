@@ -97,7 +97,7 @@ const graphTitle = document.createElement("h2"); graphTitle.textContent = "Multi
 const graphFrame = document.createElement("div"); graphFrame.className = "frame graph-frame";
 const graphCard = document.createElement("multi-metric-graph-card");
 graphCard.setConfig({
-  columns: 3, graph_height: 120, hours_to_show: 24, refresh_interval: 3600, show_icons: true,
+  columns: 3, card_height: 220, hours_to_show: 24, refresh_interval: 3600, show_icons: true,
   metrics: [
     { entity: "sensor.speedtest_download", name: "Download", icon: "mdi:download", unit: "Mbps", decimals: 1, min: 10, max: 70, color: "#65b7e8" },
     { entity: "sensor.speedtest_upload", name: "Upload", icon: "mdi:upload", unit: "Mbps", decimals: 1, min: 5, max: 30, color: "#b09be9" },

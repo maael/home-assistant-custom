@@ -7,19 +7,24 @@ import { formatMetricValue, mergeMultiMetricGraphConfig } from "./multi-metric-g
 const STYLE = `
   :host { display:block; width:100%; height:auto; container-type:inline-size; }
   ha-card { display:block; width:100%; box-sizing:border-box; overflow:hidden; color:var(--primary-text-color); background:var(--ha-card-background, var(--card-background-color)); }
-  .title { padding:14px 16px 8px; font-size:16px; line-height:20px; font-weight:600; }
+  ha-card.fixed-height { height:var(--card-height); display:flex; flex-direction:column; }
+  .title { padding:14px 16px 8px; font-size:16px; line-height:20px; font-weight:600; text-align:left; }
   .metrics { display:grid; grid-template-columns:repeat(var(--columns), minmax(0, 1fr)); min-width:0; }
+  .fixed-height .metrics { flex:1 1 auto; min-height:0; grid-auto-rows:minmax(0, 1fr); }
   .metric { min-width:0; position:relative; display:flex; flex-direction:column; cursor:pointer; outline:none; overflow:hidden; }
   .metric:not(:first-child) { border-left:1px solid var(--divider-color, rgba(127,127,127,.18)); }
   .metric.column-start { border-left:0; }
   .metric.new-row { border-top:1px solid var(--divider-color, rgba(127,127,127,.18)); }
   .metric:focus-visible { box-shadow:inset 0 0 0 2px var(--primary-color); border-radius:8px; z-index:1; }
-  .info { min-width:0; min-height:58px; box-sizing:border-box; display:flex; align-items:center; justify-content:center; gap:9px; padding:10px 12px 7px; text-align:center; }
+  .info { min-width:0; min-height:58px; box-sizing:border-box; display:grid; grid-template-columns:minmax(0, 1fr) auto minmax(0, 1fr); align-items:center; column-gap:8px; padding:10px 12px 7px; }
+  .label { min-width:0; display:flex; align-items:center; gap:6px; justify-self:stretch; color:var(--secondary-text-color); }
   .icon { flex:0 0 auto; width:20px; height:20px; --mdc-icon-size:20px; }
-  .copy { min-width:0; display:flex; flex-direction:column; align-items:center; line-height:1.2; }
-  .name { max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:var(--secondary-text-color); font-size:12px; font-weight:600; letter-spacing:.02em; text-transform:uppercase; }
-  .value { margin-top:3px; white-space:nowrap; font-size:var(--ha-font-size-xl, 24px); line-height:1.1; font-weight:500; font-variant-numeric:tabular-nums; }
+  .name { min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:12px; font-weight:600; letter-spacing:.02em; text-transform:uppercase; text-align:left; }
+  .value { grid-column:2; justify-self:center; white-space:nowrap; text-align:center; font-size:var(--ha-font-size-xl, 24px); line-height:1.1; font-weight:500; font-variant-numeric:tabular-nums; }
+  .balance { grid-column:3; }
   .chart { position:relative; height:var(--graph-height); min-height:0; margin:0 8px 8px; overflow:hidden; }
+  .fixed-height .metric { min-height:0; }
+  .fixed-height .chart { height:auto; flex:1 1 auto; }
   .graph { display:block; width:100%; height:100%; pointer-events:none; }
   .empty { position:absolute; inset:0; display:grid; place-items:center; color:var(--secondary-text-color); font-size:11px; opacity:.65; }
   @container (max-width:420px) {
@@ -76,6 +81,7 @@ export class MultiMetricGraphCard extends HTMLElement {
 
   getCardSize() {
     if (!this._config) return 3;
+    if (this._config.card_height) return Math.max(1, Math.ceil(this._config.card_height / 50));
     const rows = Math.ceil(this._config.metrics.length / this._config.columns);
     return Math.max(1, Math.ceil((rows * (this._config.graph_height + 66) + (this._config.show_title && this._config.title ? 42 : 0)) / 50));
   }
@@ -141,6 +147,10 @@ export class MultiMetricGraphCard extends HTMLElement {
     const card = document.createElement("ha-card");
     card.style.setProperty("--columns", this._config.columns);
     card.style.setProperty("--graph-height", `${this._config.graph_height}px`);
+    if (this._config.card_height) {
+      card.classList.add("fixed-height");
+      card.style.setProperty("--card-height", `${this._config.card_height}px`);
+    }
     if (this._config.show_title && this._config.title) {
       const title = document.createElement("div"); title.className = "title"; title.textContent = this._config.title; card.append(title);
     }
@@ -167,13 +177,14 @@ export class MultiMetricGraphCard extends HTMLElement {
     node.className = "metric"; node.title = `${name}: ${formatted.full} · ${hours} hour history`;
 
     const info = document.createElement("div"); info.className = "info";
+    const label = document.createElement("div"); label.className = "label";
     if (showIcon && iconName) {
-      const icon = document.createElement("ha-icon"); icon.className = "icon"; icon.setAttribute("icon", iconName); icon.style.color = color; icon.setAttribute("aria-hidden", "true"); info.append(icon);
+      const icon = document.createElement("ha-icon"); icon.className = "icon"; icon.setAttribute("icon", iconName); icon.style.color = color; icon.setAttribute("aria-hidden", "true"); label.append(icon);
     }
-    const copy = document.createElement("div"); copy.className = "copy";
-    const label = document.createElement("span"); label.className = "name"; label.textContent = name;
+    const nameNode = document.createElement("span"); nameNode.className = "name"; nameNode.textContent = name; label.append(nameNode);
     const value = document.createElement("span"); value.className = "value"; value.textContent = formatted.text; value.style.color = color;
-    copy.append(label, value); info.append(copy); node.append(info);
+    const balance = document.createElement("span"); balance.className = "balance"; balance.setAttribute("aria-hidden", "true");
+    info.append(label, value, balance); node.append(info);
 
     const chart = document.createElement("div"); chart.className = "chart";
     if (metric.show_graph ?? this._config.show_graphs) chart.append(this._renderGraph(metric, state, color));
@@ -227,11 +238,11 @@ export class MultiMetricGraphCardEditor extends HTMLElement {
   _emit(config) { this._config = config; this.dispatchEvent(new CustomEvent("config-changed", { bubbles: true, composed: true, detail: { config } })); this._render(); }
   _render() {
     if (!this._config) return;
-    this.shadowRoot.innerHTML = `<style>${EDITOR_STYLE}</style><div class="form"><label>Title<input data-key="title" value="${this._escape(this._config.title || "")}"></label><div class="row"><label>Columns<input data-key="columns" type="number" min="1" max="12" value="${this._config.columns ?? 3}"></label><label>Graph height<input data-key="graph_height" type="number" min="60" max="300" value="${this._config.graph_height ?? 120}"></label></div><div class="row"><label>History hours<input data-key="hours_to_show" type="number" min="0.25" step="0.25" value="${this._config.hours_to_show ?? 24}"></label><label><span><input data-key="show_icons" type="checkbox" ${this._config.show_icons ? "checked" : ""}> Show icons</span></label></div><label><span><input data-key="show_title" type="checkbox" ${this._config.show_title ? "checked" : ""}> Show title</span></label><h4>Metrics</h4><div class="list metrics"></div><button class="add-metric">Add metric</button></div>`;
+    this.shadowRoot.innerHTML = `<style>${EDITOR_STYLE}</style><div class="form"><label>Title<input data-key="title" value="${this._escape(this._config.title || "")}"></label><div class="row"><label>Columns<input data-key="columns" type="number" min="1" max="12" value="${this._config.columns ?? 3}"></label><label>Card height (optional)<input data-key="card_height" type="number" min="120" max="1000" placeholder="Automatic" value="${this._config.card_height ?? ""}"></label></div><div class="row"><label>Graph height<input data-key="graph_height" type="number" min="60" max="300" value="${this._config.graph_height ?? 120}"></label><label>History hours<input data-key="hours_to_show" type="number" min="0.25" step="0.25" value="${this._config.hours_to_show ?? 24}"></label></div><div class="row"><label><span><input data-key="show_icons" type="checkbox" ${this._config.show_icons ? "checked" : ""}> Show icons</span></label><label><span><input data-key="show_title" type="checkbox" ${this._config.show_title ? "checked" : ""}> Show title</span></label></div><h4>Metrics</h4><div class="list metrics"></div><button class="add-metric">Add metric</button></div>`;
     this._renderItems(this._config.metrics || []);
     this.shadowRoot.querySelectorAll("[data-key]").forEach((input) => input.addEventListener("change", () => {
       const config = structuredClone(this._config); const key = input.dataset.key;
-      config[key] = input.type === "checkbox" ? input.checked : input.type === "number" ? Number(input.value) : input.value || (key === "title" ? null : input.value); this._emit(config);
+      config[key] = input.type === "checkbox" ? input.checked : input.type === "number" ? (key === "card_height" && input.value === "" ? null : Number(input.value)) : input.value || (key === "title" ? null : input.value); this._emit(config);
     }));
     this.shadowRoot.querySelector(".add-metric").onclick = () => { const config = structuredClone(this._config); config.metrics ||= []; config.metrics.push({ entity: "sensor.example" }); this._emit(config); };
   }

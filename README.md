@@ -56,6 +56,7 @@ See [the full card documentation](docs/compact-system-status-card.md), including
 ```yaml
 type: custom:multi-metric-graph-card
 columns: 3
+card_height: 220
 show_icons: true
 metrics:
   - entity: sensor.speedtest_download
@@ -103,7 +104,7 @@ See [Media Download Card documentation](docs/media-download-card.md) for all opt
 
 1. Run `npm ci && npm run build`, or download `home-assistant-custom.js` from a release.
 2. Copy it to `<config>/www/home-assistant-custom.js`.
-3. Add `/local/home-assistant-custom.js?v=0.3.0` under **Settings → Dashboards → Resources** as a **JavaScript module**.
+3. Add `/local/home-assistant-custom.js?v=0.3.1` under **Settings → Dashboards → Resources** as a **JavaScript module**.
 4. Hard-refresh the browser.
 
 This installs the same shared bundle used by HACS.

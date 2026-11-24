@@ -12,7 +12,7 @@ columns: 3
 hours_to_show: 24
 refresh_interval: 60
 show_icons: true
-graph_height: 120
+card_height: 220
 metrics:
   - entity: sensor.speedtest_download
     name: Download
@@ -40,7 +40,7 @@ metrics:
     color: "#ff9f43"
 ```
 
-The card uses the entity friendly name, unit, and icon when their overrides are omitted. Icons are hidden by default. Set `show_icons: true` globally or `show_icon: true` on an individual metric.
+The card uses the entity friendly name, unit, and icon when their overrides are omitted. Icons are hidden by default. Set `show_icons: true` globally or `show_icon: true` on an individual metric. Each label and optional icon is left-aligned while the current entity value remains centred in its metric column.
 
 ## Card options
 
@@ -49,7 +49,8 @@ The card uses the entity friendly name, unit, and icon when their overrides are 
 | `title` | none | Optional card title. |
 | `show_title` | `false` | Display the configured title. |
 | `columns` | `3` | Number of graph columns, from 1 to 12. The card stacks them below 420 px. |
-| `graph_height` | `120` | Graph height in pixels, clamped to 60–300. |
+| `graph_height` | `120` | Graph-area height in pixels when `card_height` is not set, clamped to 60–300. |
+| `card_height` | automatic | Optional total card height in pixels, clamped to 120–1000. Graphs expand to use the remaining height. |
 | `hours_to_show` | `24` | Default Recorder history window in hours, from 0.25 to 720. |
 | `refresh_interval` | `60` | History refresh interval in seconds, clamped to 10–3600. |
 | `show_icons` | `false` | Default icon visibility. |

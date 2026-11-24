@@ -59,6 +59,9 @@ test("registers and renders multiple graphs, labels, values, units and icons", a
   assert.match(card.shadowRoot.textContent, /Ping7 ms/);
   assert.equal(card.shadowRoot.querySelector("ha-card").style.getPropertyValue("--columns"), "3");
   assert.equal(card.shadowRoot.querySelector("ha-card").style.getPropertyValue("--graph-height"), "120px");
+  assert.equal(card.shadowRoot.querySelectorAll(".label").length, 3);
+  assert.equal(card.shadowRoot.querySelectorAll(".balance").length, 3);
+  assert.match(card.shadowRoot.querySelector("style").textContent, /grid-template-columns:minmax\(0, 1fr\) auto minmax\(0, 1fr\)/);
   card.remove();
 });
 
@@ -92,11 +95,21 @@ test("supports title, missing history, unavailable values and more-info keyboard
   card.remove();
 });
 
+test("supports an explicit total card height", () => {
+  const card = document.createElement("multi-metric-graph-card");
+  card.setConfig(config({ card_height: 260 }));
+  const root = card.shadowRoot.querySelector("ha-card");
+  assert.equal(root.className, "fixed-height");
+  assert.equal(root.style.getPropertyValue("--card-height"), "260px");
+  assert.equal(card.getCardSize(), 6);
+});
+
 test("provides an editor and Sections sizing metadata", async () => {
   const editor = await customElements.get("multi-metric-graph-card").getConfigElement();
   editor.hass = { states };
   editor.setConfig(config());
   assert.equal(editor.shadowRoot.querySelectorAll("ha-entity-picker").length, 3);
+  assert.ok(editor.shadowRoot.querySelector('[data-key="card_height"]'));
   const card = document.createElement("multi-metric-graph-card");
   card.setConfig(config());
   assert.ok(card.getCardSize() >= 3);

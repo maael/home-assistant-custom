@@ -5,6 +5,7 @@ export const DEFAULT_MULTI_METRIC_GRAPH_CONFIG = Object.freeze({
   show_title: false,
   columns: 3,
   graph_height: 120,
+  card_height: null,
   hours_to_show: 24,
   refresh_interval: 60,
   show_icons: false,
@@ -37,6 +38,10 @@ export function mergeMultiMetricGraphConfig(config) {
   merged.show_graphs = Boolean(merged.show_graphs);
   merged.columns = number(merged.columns, 3, 1, 12, true);
   merged.graph_height = number(merged.graph_height, 120, 60, 300, true);
+  if (merged.card_height !== null && merged.card_height !== undefined && merged.card_height !== "") {
+    if (!Number.isFinite(Number(merged.card_height))) throw new Error("card_height must be numeric or null.");
+    merged.card_height = number(merged.card_height, 220, 120, 1000, true);
+  } else merged.card_height = null;
   merged.hours_to_show = number(merged.hours_to_show, 24, 0.25, 720);
   merged.refresh_interval = number(merged.refresh_interval, 60, 10, 3600);
   merged.graph_opacity = number(merged.graph_opacity, 0.8, 0, 1);
