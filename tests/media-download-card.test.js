@@ -40,7 +40,7 @@ test("registers once, polls through callWS, renders a 4x2 scrollable card, and c
     } },
   };
   const card = document.createElement("media-download-card");
-  card.setConfig({ behaviour: { refresh_interval: 3600 }, qbittorrent: { download_speed_entity: "sensor.qbittorrent_download_speed" } });
+  card.setConfig({ title: "Downloads", behaviour: { refresh_interval: 3600 }, qbittorrent: { download_speed_entity: "sensor.qbittorrent_download_speed" } });
   card.hass = {
     connection: { connected: true },
     states: { "sensor.qbittorrent_download_speed": { state: "12.4", attributes: { device_class: "data_rate", unit_of_measurement: "MB/s", friendly_name: "qBittorrent Download speed" } } },
@@ -56,9 +56,12 @@ test("registers once, polls through callWS, renders a 4x2 scrollable card, and c
   assert.match(card.shadowRoot.textContent, /S03E09/);
   assert.match(card.shadowRoot.textContent, /8m 16s/);
   assert.match(card.shadowRoot.textContent, /Paused/);
-  assert.match(card.shadowRoot.querySelector(".summary").textContent, /1 movie · 1 TV show · 2 torrents · ↓ 12.4 MB\/s/);
+  const summary = card.shadowRoot.querySelector(".summary");
+  assert.equal(card.shadowRoot.querySelector(".heading").textContent, "Downloads");
+  assert.deepEqual([...summary.querySelectorAll("ha-icon")].map((icon) => icon.getAttribute("icon")), ["mdi:movie-open", "mdi:television", "mdi:magnet"]);
+  assert.match(summary.title, /1 movie · 1 TV show · 2 torrents · Download speed 12.4 MB\/s/);
   card.hass = { ...card._hass, states: { ...card._hass.states, "sensor.qbittorrent_download_speed": { state: "8.1", attributes: { unit_of_measurement: "MB/s" } } } };
-  assert.match(card.shadowRoot.querySelector(".summary").textContent, /↓ 8.1 MB\/s/);
+  assert.match(summary.textContent, /↓ 8.1 MB\/s/);
   card.remove();
   const generation = card._generation;
   await new Promise((resolve) => setTimeout(resolve, 5));
@@ -68,7 +71,7 @@ test("registers once, polls through callWS, renders a 4x2 scrollable card, and c
 test("keeps last good partial data and visibly marks it stale", async () => {
   let failQb = false;
   const card = document.createElement("media-download-card");
-  card.setConfig({ behaviour: { refresh_interval: 3600 } });
+  card.setConfig({ title: false, behaviour: { refresh_interval: 3600 } });
   card.hass = { connection: { connected: true }, callWS: async ({ domain }) => {
     if (domain === "radarr") return { movies: { release: { title: "Movie", download_id: "ABC" } } };
     if (domain === "sonarr") return { shows: {} };
@@ -81,5 +84,7 @@ test("keeps last good partial data and visibly marks it stale", async () => {
   await card._refresh(card._generation);
   assert.equal(card.shadowRoot.querySelectorAll(".item").length, 1);
   assert.match(card.shadowRoot.querySelector(".summary").textContent, /Stale \(qbittorrent\)/);
+  assert.equal(card.shadowRoot.querySelector(".heading").hidden, true);
+  assert.equal(card.shadowRoot.querySelector(".header").classList.contains("titleless"), true);
   card.remove();
 });

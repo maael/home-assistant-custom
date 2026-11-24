@@ -8,8 +8,13 @@ const STYLE = `
   ha-card { overflow:hidden; }
   .header { display:flex; align-items:baseline; gap:12px; padding:16px 16px 8px; white-space:nowrap; }
   .heading { flex:0 0 auto; font-size:var(--ha-card-header-font-size, 20px); font-weight:500; color:var(--primary-text-color); }
-  .summary { min-width:0; flex:1 1 auto; overflow:hidden; text-overflow:ellipsis; font-size:12px; color:var(--secondary-text-color); text-align:right; }
-  .stale { color:var(--warning-color, #ff9800); font-weight:600; }
+  .summary { min-width:0; flex:1 1 auto; display:flex; align-items:center; justify-content:flex-end; gap:5px; overflow:hidden; font-size:12px; color:var(--secondary-text-color); }
+  .header.titleless .summary { justify-content:flex-start; }
+  .stat { display:inline-flex; flex:0 0 auto; align-items:center; gap:2px; }
+  .stat ha-icon { --mdc-icon-size:14px; width:14px; height:14px; }
+  .separator { flex:0 0 auto; opacity:.7; }
+  .speed { min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .stale { flex:0 0 auto; color:var(--warning-color, #ff9800); font-weight:600; }
   .message { padding:16px; color:var(--secondary-text-color); }
   .message.error { color:var(--error-color, #db4437); }
   .grid { display:grid; grid-template-columns:repeat(var(--columns), minmax(0, 1fr)); gap:var(--gap); padding:8px 16px 16px; overflow-x:hidden; scrollbar-gutter:stable; }
@@ -157,9 +162,12 @@ export class MediaDownloadCard extends HTMLElement {
   _render() {
     if (!this._config) return;
     const errorNames = Object.keys(this._errors);
-    this._heading.textContent = this._config.title;
+    const hasTitle = typeof this._config.title === "string" && this._config.title.trim().length > 0;
+    this._heading.textContent = hasTitle ? this._config.title : "";
+    this._heading.hidden = !hasTitle;
+    this._header.classList.toggle("titleless", !hasTitle);
     this._renderSummary();
-    this._header.hidden = !this._config.title && !this._config.appearance.show_summary;
+    this._header.hidden = !hasTitle && !this._config.appearance.show_summary;
     if (!this._loaded && this._inFlight) this._showMessage("Loading media downloads…");
     else if (!this._loaded && errorNames.length) this._showMessage(`Unable to load queues: ${errorNames.map((name) => `${name}: ${this._errors[name]}`).join("; ")}`, true);
     else if (!this._items.length) this._showMessage(errorNames.length ? "No downloads to show. Some queue data is stale." : "No current media downloads.");
@@ -176,15 +184,48 @@ export class MediaDownloadCard extends HTMLElement {
     const torrents = this._sources.qbittorrent?.length || 0;
     const plural = (count, singular, pluralForm = `${singular}s`) => `${count} ${count === 1 ? singular : pluralForm}`;
     const speed = this._downloadSpeedText() || "—";
-    this._summary.append(document.createTextNode(`${plural(movies, "movie")} · ${plural(shows, "TV show")} · ${plural(torrents, "torrent")} · ↓ ${speed}`));
+    const stats = [
+      ["mdi:movie-open", movies, plural(movies, "movie")],
+      ["mdi:television", shows, plural(shows, "TV show")],
+      ["mdi:magnet", torrents, plural(torrents, "torrent")],
+    ];
+    stats.forEach(([iconName, count, label], index) => {
+      if (index) this._appendSeparator();
+      const stat = document.createElement("span");
+      stat.className = "stat";
+      stat.setAttribute("aria-label", label);
+      stat.title = label;
+      const icon = document.createElement("ha-icon");
+      icon.setAttribute("icon", iconName);
+      icon.setAttribute("aria-hidden", "true");
+      const value = document.createElement("span");
+      value.textContent = count;
+      stat.append(icon, value);
+      this._summary.append(stat);
+    });
+    this._appendSeparator();
+    const speedNode = document.createElement("span");
+    speedNode.className = "speed";
+    speedNode.textContent = `↓ ${speed}`;
+    speedNode.setAttribute("aria-label", `Download speed ${speed}`);
+    this._summary.append(speedNode);
     const errorNames = Object.keys(this._errors);
     if (errorNames.length) {
+      this._appendSeparator();
       const stale = document.createElement("span");
       stale.className = "stale";
       stale.textContent = `Stale (${errorNames.join(", ")})`;
-      this._summary.append(document.createTextNode(" · "), stale);
+      this._summary.append(stale);
     }
-    this._summary.title = this._summary.textContent;
+    this._summary.title = `${plural(movies, "movie")} · ${plural(shows, "TV show")} · ${plural(torrents, "torrent")} · Download speed ${speed}${errorNames.length ? ` · Stale (${errorNames.join(", ")})` : ""}`;
+  }
+
+  _appendSeparator() {
+    const separator = document.createElement("span");
+    separator.className = "separator";
+    separator.textContent = "·";
+    separator.setAttribute("aria-hidden", "true");
+    this._summary.append(separator);
   }
 
   _downloadSpeedText() {

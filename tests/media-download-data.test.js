@@ -77,7 +77,8 @@ test("filters completed and inactive downloads", () => {
 });
 
 test("merges defaults, validates values, and creates WebSocket service messages", () => {
-  const config = mergeConfig({ appearance: { columns: 6, rows: 0 }, radarr: { entry_id: "entry", service_data: { extra: true } } });
+  const config = mergeConfig({ title: false, appearance: { columns: 6, rows: 0 }, radarr: { entry_id: "entry", service_data: { extra: true } } });
+  assert.equal(config.title, false);
   assert.equal(config.appearance.columns, 6);
   assert.equal(config.appearance.rows, 0);
   assert.equal(config.sonarr.action, "get_queue");
@@ -87,4 +88,5 @@ test("merges defaults, validates values, and creates WebSocket service messages"
   });
   assert.throws(() => mergeConfig({ qbittorrent: { service_data: "bad" } }), /service_data/);
   assert.throws(() => mergeConfig({ qbittorrent: { download_speed_entity: "switch.bad" } }), /sensor entity ID/);
+  assert.throws(() => mergeConfig({ title: 123 }), /string or false/);
 });

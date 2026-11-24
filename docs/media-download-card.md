@@ -26,7 +26,7 @@ The card accepts mappings or arrays, normal response envelopes, and entity-keyed
 2. Copy it to `<config>/www/home-assistant-custom.js`.
 3. If `www` was newly created, restart Home Assistant.
 4. Go to **Settings → Dashboards → Resources → Add resource**.
-5. Add `/local/home-assistant-custom.js?v=0.1.1` as **JavaScript module**.
+5. Add `/local/home-assistant-custom.js?v=0.1.2` as **JavaScript module**.
 6. Hard-refresh the browser.
 
 ## Minimal usable YAML
@@ -51,6 +51,7 @@ A bare `type: custom:media-download-card` loads the card, but current core actio
 
 ```yaml
 type: custom:media-download-card
+# Any string, or false to show only the summary row.
 title: Media Downloads
 radarr:
   action: get_queue
@@ -97,7 +98,7 @@ behaviour:
 
 | Option | Default | Description |
 | --- | --- | --- |
-| `title` | `Media Downloads` | Card heading. Set to an empty string to hide it when the summary is also disabled. |
+| `title` | `Media Downloads` | Card heading. Set a custom string, or use `false` (or an empty string) to hide the title while retaining the summary row. |
 | `radarr`, `sonarr`, `qbittorrent` | See below | Per-integration action configuration. |
 
 Each integration supports:
@@ -120,7 +121,7 @@ Each integration supports:
 | `show_title` | `false` | Show media titles below posters. Titles remain in accessible labels. |
 | `show_episode` | `true` | Show TV season/episode information. Movie entries reserve the same alignment line. |
 | `show_eta` | `true` | Show ETA for active downloads and status for inactive downloads. |
-| `show_summary` | `true` | Show one compact line with queued movie, TV show, and torrent counts plus total download speed and stale state. |
+| `show_summary` | `true` | Show one compact icon row with queued movie, TV show, and torrent counts plus total download speed and stale state. |
 | `progress_colour` | `#4CAF50` | Active progress bar colour. |
 | `progress_bar_height` | `5` | Progress bar height in pixels. |
 | `progress_text_size` | `16` | Percentage text size in pixels. |
@@ -142,6 +143,8 @@ Each integration supports:
 
 ## Matching and display behavior
 
+- The summary uses Home Assistant Material Design icons for movies, TV shows, and torrents. Hovering the row exposes the full text summary.
+- Set `title: false` to use the summary as the only header content.
 - Joins use torrent IDs/hashes only, after trimming and lowercasing. Titles are never used for matching.
 - Duplicate Arr entries sharing a hash are combined; TV episode labels are retained and sorted.
 - qBittorrent progress is interpreted as 0–100. Arr progress and then `size`/`size_left` are fallbacks.
@@ -165,4 +168,4 @@ Each integration supports:
 
 ## Updates and rollback
 
-Use HACS's update flow, then reload the frontend. To roll back, open the HACS repository version/redownload menu and choose an earlier release. For manual installs, replace the JS file and increment the resource query string (for example `?v=0.1.2`) to bypass browser cache.
+Use HACS's update flow, then reload the frontend. To roll back, open the HACS repository version/redownload menu and choose an earlier release. For manual installs, replace the JS file and increment the resource query string (for example `?v=0.1.3`) to bypass browser cache.

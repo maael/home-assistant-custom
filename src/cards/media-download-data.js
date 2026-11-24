@@ -41,6 +41,9 @@ export function mergeConfig(config = {}) {
     appearance: { ...DEFAULT_CONFIG.appearance, ...(config.appearance || {}) },
     behaviour: { ...DEFAULT_CONFIG.behaviour, ...(config.behaviour || {}) },
   };
+  if (merged.title !== false && typeof merged.title !== "string") {
+    throw new Error("title must be a string or false.");
+  }
   const number = (value, fallback, min, max, integer = false) => {
     const parsed = Number(value);
     if (!Number.isFinite(parsed)) return fallback;
