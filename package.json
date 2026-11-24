@@ -1,0 +1,17 @@
+{
+  "name": "home-assistant-custom",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "clean": "rm -rf dist && mkdir -p dist",
+    "build": "npm run clean && esbuild src/index.js --bundle --format=esm --target=es2022 --minify --legal-comments=none --outfile=dist/home-assistant-custom.js",
+    "test": "node --test",
+    "check": "npm test && npm run build"
+  },
+  "devDependencies": {
+    "esbuild": "0.28.2",
+    "happy-dom": "21.0.4"
+  }
+}

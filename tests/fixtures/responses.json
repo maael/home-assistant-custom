@@ -1,0 +1,66 @@
+{
+  "radarr": {
+    "response": {
+      "movies": {
+        "Example Movie Release": {
+          "title": "Example Movie",
+          "download_id": " ABCDEF1234567890ABCDEF1234567890ABCDEF12 ",
+          "progress": "47.17%",
+          "size": 1818367140,
+          "size_left": 960631972,
+          "time_left": "00:08:16",
+          "images": { "poster": "https://example.com/movie.jpg" }
+        }
+      }
+    }
+  },
+  "sonarr": {
+    "result": {
+      "sensor.queue": {
+        "shows": [
+          {
+            "title": "Example Show",
+            "download_id": "1234567890ABCDEF1234567890ABCDEF12345678",
+            "season_number": 1,
+            "is_season_pack": true,
+            "episode_count": 2,
+            "episode_range": "E07-E08",
+            "progress": "32.47%",
+            "time_left": "None",
+            "images": { "poster": "https://example.com/show.jpg" }
+          },
+          {
+            "title": "Example Show duplicate",
+            "download_id": "1234567890abcdef1234567890abcdef12345678",
+            "season_number": 1,
+            "episode_number": 9
+          }
+        ]
+      }
+    }
+  },
+  "qbittorrent": {
+    "service_response": {
+      "torrents": {
+        "Example Movie Release": {
+          "id": "abcdef1234567890abcdef1234567890abcdef12",
+          "percent_done": "47.17",
+          "status": "downloading",
+          "eta": "00:08:16",
+          "ratio": "0.00"
+        },
+        "Example Show Release": {
+          "id": "1234567890abcdef1234567890abcdef12345678",
+          "percent_done": "32.47",
+          "status": "pausedDL",
+          "eta": "91793:10:57"
+        },
+        "Unrelated": {
+          "id": "ffffffffffffffffffffffffffffffffffffffff",
+          "percent_done": "5",
+          "status": "downloading"
+        }
+      }
+    }
+  }
+}
