@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.0] - 2026-11-24
+
+### Changed
+
+- Replaced Fullscreen Toggle Card with a native-style Fullscreen Toggle Badge for dashboard badge rows.
+- Renamed the type from `custom:fullscreen-toggle-card` to `custom:fullscreen-toggle-badge`; state-specific text, icons, colours, and F11 support remain available.
+
 ## [0.4.0] - 2026-11-24
 
 ### Added
@@ -116,6 +123,7 @@
 - Responsive poster grid, progress/status display, polling, partial-failure handling, and configuration options.
 - Synthetic fixtures, transformation and mocked-browser tests, CI, release automation, and installation documentation.
 
+[0.5.0]: https://github.com/maael/home-assistant-custom/releases/tag/v0.5.0
 [0.4.0]: https://github.com/maael/home-assistant-custom/releases/tag/v0.4.0
 [0.3.5]: https://github.com/maael/home-assistant-custom/releases/tag/v0.3.5
 [0.3.4]: https://github.com/maael/home-assistant-custom/releases/tag/v0.3.4

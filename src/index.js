@@ -1,7 +1,7 @@
 import "./cards/media-download-card.js";
 import "./cards/compact-system-status-card.js";
 import "./cards/multi-metric-graph-card.js";
-import "./cards/fullscreen-toggle-card.js";
+import "./badges/fullscreen-toggle-badge.js";
 
 window.customCards = window.customCards || [];
 const cards = [
@@ -26,14 +26,21 @@ const cards = [
     preview: true,
     documentationURL: "https://github.com/maael/home-assistant-custom/blob/main/docs/multi-metric-graph-card.md",
   },
-  {
-    type: "fullscreen-toggle-card",
-    name: "Fullscreen Toggle Card",
-    description: "A configurable fullscreen toggle with separate text, icons, and icon colours for each state.",
-    preview: true,
-    documentationURL: "https://github.com/maael/home-assistant-custom/blob/main/docs/fullscreen-toggle-card.md",
-  },
 ];
 for (const card of cards) {
   if (!window.customCards.some((registered) => registered.type === card.type)) window.customCards.push(card);
+}
+
+window.customBadges = window.customBadges || [];
+const badges = [
+  {
+    type: "fullscreen-toggle-badge",
+    name: "Fullscreen Toggle Badge",
+    description: "A configurable fullscreen badge with separate text, icons, and icon colours for each state.",
+    preview: true,
+    documentationURL: "https://github.com/maael/home-assistant-custom/blob/main/docs/fullscreen-toggle-badge.md",
+  },
+];
+for (const badge of badges) {
+  if (!window.customBadges.some((registered) => registered.type === badge.type)) window.customBadges.push(badge);
 }

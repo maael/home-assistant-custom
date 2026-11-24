@@ -1,17 +1,17 @@
 # Home Assistant Custom
 
-A single HACS Dashboard repository for independently configurable Home Assistant custom cards. All cards ship in the shared, self-contained `home-assistant-custom.js` bundle with no external runtime or CDN dependencies.
+A single HACS Dashboard repository for independently configurable Home Assistant custom cards and badges. Everything ships in the shared, self-contained `home-assistant-custom.js` bundle with no external runtime or CDN dependencies.
 
 > **v0.x is prerelease software.** Verify cards against your Home Assistant version and configuration before relying on them.
 
-## Card catalogue
+## Component catalogue
 
-| Card | Type | Description | Documentation |
+| Component | Type | Description | Documentation |
 | --- | --- | --- | --- |
 | Compact System Status Card | `custom:compact-system-status-card` | Compact numeric metrics with real Recorder sparklines and supplementary states. | [Configuration](docs/compact-system-status-card.md) |
 | Multi Metric Graph Card | `custom:multi-metric-graph-card` | Multiple configurable Recorder graphs, values, units, labels, and icons in one card. | [Configuration](docs/multi-metric-graph-card.md) |
 | Media Download Card | `custom:media-download-card` | Radarr/Sonarr queue artwork joined to qBittorrent progress and status. | [Configuration](docs/media-download-card.md) |
-| Fullscreen Toggle Card | `custom:fullscreen-toggle-card` | Configurable fullscreen toggle with separate text, icons, and icon colours for each state. | [Configuration](docs/fullscreen-toggle-card.md) |
+| Fullscreen Toggle Badge | `custom:fullscreen-toggle-badge` | Compact fullscreen toggle with separate text, icons, and icon colours for each state. | [Configuration](docs/fullscreen-toggle-badge.md) |
 
 ## Install with HACS
 
@@ -21,7 +21,7 @@ A single HACS Dashboard repository for independently configurable Home Assistant
 4. Find **Home Assistant Custom** and download it. For prereleases, select the desired version from the version/redownload menu if needed.
 5. Reload the browser frontend. HACS should register `/hacsfiles/home-assistant-custom/home-assistant-custom.js` as a JavaScript module.
 
-All cards are installed and updated together. Do not add a separate resource or HACS repository for an individual card.
+All cards and badges are installed and updated together. Do not add a separate resource or HACS repository for an individual component.
 
 ## Compact System Status Card quick start
 
@@ -101,10 +101,12 @@ qbittorrent:
 
 See [Media Download Card documentation](docs/media-download-card.md) for all options and compatibility notes.
 
-## Fullscreen Toggle Card quick start
+## Fullscreen Toggle Badge quick start
+
+Add this to a dashboard view's badges:
 
 ```yaml
-type: custom:fullscreen-toggle-card
+type: custom:fullscreen-toggle-badge
 enter_text: Go fullscreen
 exit_text: Exit fullscreen
 enter_icon: mdi:fullscreen
@@ -113,13 +115,13 @@ enter_icon_color: "#42a5f5"
 exit_icon_color: "#ff9800"
 ```
 
-See [Fullscreen Toggle Card documentation](docs/fullscreen-toggle-card.md) for styling, icon-only buttons, F11 behavior, and migration aliases.
+See [Fullscreen Toggle Badge documentation](docs/fullscreen-toggle-badge.md) for styling, icon-only badges, F11 behavior, and migration from v0.4.0.
 
 ## Manual bundle installation
 
 1. Run `npm ci && npm run build`, or download `home-assistant-custom.js` from a release.
 2. Copy it to `<config>/www/home-assistant-custom.js`.
-3. Add `/local/home-assistant-custom.js?v=0.4.0` under **Settings → Dashboards → Resources** as a **JavaScript module**.
+3. Add `/local/home-assistant-custom.js?v=0.5.0` under **Settings → Dashboards → Resources** as a **JavaScript module**.
 4. Hard-refresh the browser.
 
 This installs the same shared bundle used by HACS.
