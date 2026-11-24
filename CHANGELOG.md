@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.2.0] - 2026-11-24
+
+### Added
+
+- Compact System Status Card with responsive two-row and single-row layouts.
+- Batched Home Assistant Recorder history sparklines, timestamp-aware scaling, peak-preserving downsampling, thresholds, and per-metric graph controls.
+- Supplementary entity states with labels, icons/status dots, and state-dependent colours.
+- More-info interactions, keyboard accessibility, Sections sizing, card-picker metadata, and a visual entity editor.
+- Deterministic browser development preview covering light/dark themes, mobile width, unavailable entities, missing history, titles, and additional metrics.
+- Dedicated configuration documentation and mock-based data/rendering/lifecycle tests.
+
+### Changed
+
+- The shared HACS bundle and card catalogue now include both Compact System Status Card and Media Download Card.
+
 ## [0.1.3] - 2026-04-13
 
 ### Added
@@ -35,6 +50,7 @@
 - Responsive poster grid, progress/status display, polling, partial-failure handling, and configuration options.
 - Synthetic fixtures, transformation and mocked-browser tests, CI, release automation, and installation documentation.
 
+[0.2.0]: https://github.com/maael/home-assistant-custom/releases/tag/v0.2.0
 [0.1.3]: https://github.com/maael/home-assistant-custom/releases/tag/v0.1.3
 [0.1.2]: https://github.com/maael/home-assistant-custom/releases/tag/v0.1.2
 [0.1.1]: https://github.com/maael/home-assistant-custom/releases/tag/v0.1.1

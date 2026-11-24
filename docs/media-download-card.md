@@ -26,7 +26,7 @@ The card accepts mappings or arrays, normal response envelopes, and entity-keyed
 2. Copy it to `<config>/www/home-assistant-custom.js`.
 3. If `www` was newly created, restart Home Assistant.
 4. Go to **Settings → Dashboards → Resources → Add resource**.
-5. Add `/local/home-assistant-custom.js?v=0.1.3` as **JavaScript module**.
+5. Add `/local/home-assistant-custom.js?v=0.2.0` as **JavaScript module**.
 6. Hard-refresh the browser.
 
 ## Minimal usable YAML
@@ -173,4 +173,4 @@ Each integration supports:
 
 ## Updates and rollback
 
-Use HACS's update flow, then reload the frontend. To roll back, open the HACS repository version/redownload menu and choose an earlier release. For manual installs, replace the JS file and increment the resource query string (for example `?v=0.1.4`) to bypass browser cache.
+Use HACS's update flow, then reload the frontend. To roll back, open the HACS repository version/redownload menu and choose an earlier release. For manual installs, replace the JS file and increment the resource query string (for example `?v=0.2.0`) to bypass browser cache.

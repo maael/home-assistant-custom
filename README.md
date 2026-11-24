@@ -1,24 +1,58 @@
 # Home Assistant Custom
 
-A single HACS Dashboard repository for independently configurable Home Assistant custom cards. The bundle currently includes **Media Download Card**, with queue artwork, progress, status, counts, and qBittorrent download speed.
+A single HACS Dashboard repository for independently configurable Home Assistant custom cards. All cards ship in the shared, self-contained `home-assistant-custom.js` bundle with no external runtime or CDN dependencies.
 
-> **v0.1.x is prerelease software.** The action names and response keys were verified against Home Assistant Core's development source, but have not been validated against the maintainer's live Home Assistant instance.
+> **v0.x is prerelease software.** Verify cards against your Home Assistant version and configuration before relying on them.
+
+## Card catalogue
+
+| Card | Type | Description | Documentation |
+| --- | --- | --- | --- |
+| Compact System Status Card | `custom:compact-system-status-card` | Compact numeric metrics with real Recorder sparklines and supplementary states. | [Configuration](docs/compact-system-status-card.md) |
+| Media Download Card | `custom:media-download-card` | Radarr/Sonarr queue artwork joined to qBittorrent progress and status. | [Configuration](docs/media-download-card.md) |
 
 ## Install with HACS
-
-The GitHub repository must be public (or otherwise accessible to HACS) before other installations can use it.
 
 1. Open HACS in Home Assistant.
 2. Open the menu and choose **Custom repositories**.
 3. Add `https://github.com/maael/home-assistant-custom` with category **Dashboard**.
-4. Find **Home Assistant Custom** and download it. If HACS does not offer the prerelease automatically, use the repository's version/redownload menu to select `v0.1.0`, or install from the default branch while testing.
-5. Restart or reload the browser frontend. HACS should register `/hacsfiles/home-assistant-custom/home-assistant-custom.js` as a JavaScript module.
+4. Find **Home Assistant Custom** and download it. For prereleases, select the desired version from the version/redownload menu if needed.
+5. Reload the browser frontend. HACS should register `/hacsfiles/home-assistant-custom/home-assistant-custom.js` as a JavaScript module.
 
-See [Media Download Card documentation](docs/media-download-card.md) for configuration, manual installation, troubleshooting, updates, and rollback.
+Both cards are installed and updated together. Do not add a separate resource or HACS repository for an individual card.
 
-## Minimal usable card configuration
+## Compact System Status Card quick start
 
-The current core actions require instance identifiers:
+```yaml
+type: custom:compact-system-status-card
+metrics:
+  - entity: sensor.server_cpu_usage
+    name: CPU
+    unit: "%"
+    min: 0
+    max: 100
+  - entity: sensor.server_memory_usage
+    name: RAM
+    unit: "%"
+    min: 0
+    max: 100
+details:
+  - entity: sensor.server_ip_address
+    icon: mdi:network
+    show_icon: true
+  - entity: sensor.server_status
+    icon: mdi:circle
+    show_icon: true
+    state_colors:
+      online: green
+      offline: red
+```
+
+See [the full card documentation](docs/compact-system-status-card.md), including the exact NAS example, all options, history behavior, and responsive layouts.
+
+## Media Download Card quick start
+
+Current Home Assistant Core actions require instance identifiers:
 
 ```yaml
 type: custom:media-download-card
@@ -27,12 +61,22 @@ radarr:
 sonarr:
   entry_id: YOUR_SONARR_CONFIG_ENTRY_ID
 qbittorrent:
-  # Optional if the card can auto-detect this sensor:
   download_speed_entity: sensor.qbittorrent_download_speed
   service_data:
     device_id: YOUR_QBITTORRENT_DEVICE_ID
     torrent_filter: all
 ```
+
+See [Media Download Card documentation](docs/media-download-card.md) for all options and compatibility notes.
+
+## Manual bundle installation
+
+1. Run `npm ci && npm run build`, or download `home-assistant-custom.js` from a release.
+2. Copy it to `<config>/www/home-assistant-custom.js`.
+3. Add `/local/home-assistant-custom.js?v=0.2.0` under **Settings → Dashboards → Resources** as a **JavaScript module**.
+4. Hard-refresh the browser.
+
+This installs the same shared bundle used by HACS.
 
 ## Development
 
@@ -42,14 +86,11 @@ Requires Node.js 22.
 npm ci
 npm test
 npm run build
+npm run preview
 ```
 
-The reproducible bundle is written to `dist/home-assistant-custom.js`. It has no external runtime or CDN dependencies. Add future cards as modules under `src/cards/`, import them from `src/index.js`, and add tests and documentation.
+The reproducible bundle is written to `dist/home-assistant-custom.js`. The deterministic browser preview is available at `http://localhost:4173/dev/preview.html` and uses mock Home Assistant states/history while rendering the actual card element.
 
-## Status
-
-- HACS Dashboard packaging follows the current requirement that a repository-named JavaScript file exists in `dist/` or a release.
-- Home Assistant's current custom-card API, module resource registration, and `window.customCards` picker registration are used.
-- Current Home Assistant Core source confirms `radarr.get_queue`, `sonarr.get_queue`, and `qbittorrent.get_torrents`, their response keys, and required identifiers. Installed-version and live-instance behavior still require validation.
+Add cards as modules under `src/cards/`, import them from `src/index.js`, and add tests and documentation. Existing cards remain independently configurable even though they share one distribution.
 
 Licensed under the [MIT License](LICENSE).
