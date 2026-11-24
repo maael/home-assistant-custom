@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.2.1] - 2026-11-24
+
+### Fixed
+
+- Added horizontal inset between adjacent metric sparklines so graphs no longer meet at the centre divider.
+- Made the card and `ha-card` explicitly fill their dashboard cell width.
+- Switched Sections grid height reporting to automatic sizing and corrected standard card-size estimates, preventing neighbouring cards from overlapping the compact card.
+
 ## [0.2.0] - 2026-11-24
 
 ### Added
@@ -50,6 +58,7 @@
 - Responsive poster grid, progress/status display, polling, partial-failure handling, and configuration options.
 - Synthetic fixtures, transformation and mocked-browser tests, CI, release automation, and installation documentation.
 
+[0.2.1]: https://github.com/maael/home-assistant-custom/releases/tag/v0.2.1
 [0.2.0]: https://github.com/maael/home-assistant-custom/releases/tag/v0.2.0
 [0.1.3]: https://github.com/maael/home-assistant-custom/releases/tag/v0.1.3
 [0.1.2]: https://github.com/maael/home-assistant-custom/releases/tag/v0.1.2

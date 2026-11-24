@@ -4,15 +4,15 @@ import {
 } from "./compact-system-status-data.js";
 
 const STYLE = `
-  :host { display:block; container-type:inline-size; }
-  ha-card { overflow:hidden; color:var(--primary-text-color); background:var(--ha-card-background, var(--card-background-color)); }
+  :host { display:block; width:100%; height:auto; container-type:inline-size; }
+  ha-card { display:block; width:100%; box-sizing:border-box; overflow:hidden; color:var(--primary-text-color); background:var(--ha-card-background, var(--card-background-color)); }
   .title { padding:12px 14px 4px; font-size:15px; line-height:20px; font-weight:600; }
   .content { min-width:0; }
   .metrics { display:grid; grid-template-columns:repeat(var(--metric-count), minmax(0, 1fr)); min-width:0; }
   .metric { position:relative; isolation:isolate; min-width:0; height:53px; box-sizing:border-box; display:flex; align-items:center; padding:8px 13px; overflow:hidden; cursor:pointer; outline:none; }
   .metric + .metric { border-left:1px solid var(--divider-color, rgba(127,127,127,.18)); }
   .metric:focus-visible, .detail:focus-visible { box-shadow:inset 0 0 0 2px var(--primary-color); border-radius:8px; }
-  .graph { position:absolute; z-index:-1; inset:2px 0 0; width:100%; height:calc(100% - 2px); pointer-events:none; }
+  .graph { position:absolute; z-index:-1; inset:2px 4px 0; width:calc(100% - 8px); height:calc(100% - 2px); pointer-events:none; }
   .metric-text { display:flex; align-items:center; gap:6px; min-width:0; width:100%; padding:2px 3px; border-radius:5px; text-shadow:0 1px 2px var(--card-background-color), 0 0 5px var(--card-background-color); }
   .metric-icon { flex:0 0 auto; --mdc-icon-size:16px; width:16px; height:16px; }
   .metric-copy { min-width:0; display:flex; align-items:baseline; justify-content:space-between; gap:7px; width:100%; }
@@ -92,8 +92,11 @@ export class CompactSystemStatusCard extends HTMLElement {
     this._generation++;
   }
 
-  getCardSize() { return this._config?.layout === "single-row" ? 1 : 2; }
-  getGridOptions() { return { columns: 12, rows: this._config?.show_title ? 2 : 1, min_columns: 3, min_rows: 1 }; }
+  getCardSize() {
+    const contentRows = this._config?.layout === "single-row" ? 1 : 2;
+    return contentRows + (this._config?.show_title && this._config?.title ? 1 : 0);
+  }
+  getGridOptions() { return { columns: 12, rows: "auto", min_columns: 3, min_rows: 1 }; }
 
   _restartHistory(immediate) {
     clearTimeout(this._timer);

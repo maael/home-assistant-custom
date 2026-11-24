@@ -109,5 +109,9 @@ test("provides an editor with entity pickers and card sizing", async () => {
   const card = document.createElement("compact-system-status-card");
   card.setConfig(config());
   assert.equal(card.getCardSize(), 2);
-  assert.deepEqual(card.getGridOptions(), { columns: 12, rows: 1, min_columns: 3, min_rows: 1 });
+  assert.deepEqual(card.getGridOptions(), { columns: 12, rows: "auto", min_columns: 3, min_rows: 1 });
+  assert.match(card.shadowRoot.querySelector("style").textContent, /inset:2px 4px 0/);
+  assert.match(card.shadowRoot.querySelector("style").textContent, /width:100%; height:auto/);
+  card.setConfig(config({ layout: "single-row", title: "NAS", show_title: true }));
+  assert.equal(card.getCardSize(), 2);
 });
