@@ -1,5 +1,6 @@
 import "./cards/media-download-card.js";
 import "./cards/compact-system-status-card.js";
+import "./cards/multi-metric-graph-card.js";
 
 window.customCards = window.customCards || [];
 const cards = [
@@ -16,6 +17,13 @@ const cards = [
     description: "Compact system metrics with historical sparklines and supplementary states.",
     preview: true,
     documentationURL: "https://github.com/maael/home-assistant-custom/blob/main/docs/compact-system-status-card.md",
+  },
+  {
+    type: "multi-metric-graph-card",
+    name: "Multi Metric Graph Card",
+    description: "Multiple configurable Recorder history graphs in one card.",
+    preview: true,
+    documentationURL: "https://github.com/maael/home-assistant-custom/blob/main/docs/multi-metric-graph-card.md",
   },
 ];
 for (const card of cards) {

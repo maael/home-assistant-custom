@@ -13,6 +13,9 @@ const baseStates = {
   "sensor.nas_status": state("online", "Server status", null, "mdi:server"),
   "sensor.ups": state("unavailable", "UPS", null, "mdi:battery-alert"),
   "sensor.no_history": state("28", "Archive disk", "%", "mdi:archive"),
+  "sensor.speedtest_download": state("54.3", "Download", "Mbps", "mdi:download"),
+  "sensor.speedtest_upload": state("18.4", "Upload", "Mbps", "mdi:upload"),
+  "sensor.speedtest_ping": state("7", "Ping", "ms", "mdi:timer-outline"),
 };
 
 function state(value, friendlyName, unit, icon) {
@@ -88,3 +91,17 @@ for (const [heading, className, cardConfig] of examples) {
   card.setConfig({ hours_to_show: 6, refresh_interval: 3600, show_graphs: true, graph_opacity: 0.35, graph_fill_opacity: 0.12, ...cardConfig });
   card.hass = mockHass(); frame.append(card); section.append(title, frame); gallery.append(section);
 }
+
+const graphSection = document.createElement("section"); graphSection.className = "example wide";
+const graphTitle = document.createElement("h2"); graphTitle.textContent = "Multi metric speed test graphs";
+const graphFrame = document.createElement("div"); graphFrame.className = "frame graph-frame";
+const graphCard = document.createElement("multi-metric-graph-card");
+graphCard.setConfig({
+  columns: 3, graph_height: 120, hours_to_show: 24, refresh_interval: 3600, show_icons: true,
+  metrics: [
+    { entity: "sensor.speedtest_download", name: "Download", icon: "mdi:download", unit: "Mbps", decimals: 1, min: 10, max: 70, color: "#65b7e8" },
+    { entity: "sensor.speedtest_upload", name: "Upload", icon: "mdi:upload", unit: "Mbps", decimals: 1, min: 5, max: 30, color: "#b09be9" },
+    { entity: "sensor.speedtest_ping", name: "Ping", icon: "mdi:timer-outline", unit: "ms", min: 2, max: 50, color: "#ff9f43" },
+  ],
+});
+graphCard.hass = mockHass(); graphFrame.append(graphCard); graphSection.append(graphTitle, graphFrame); gallery.prepend(graphSection);

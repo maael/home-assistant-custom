@@ -9,6 +9,7 @@ A single HACS Dashboard repository for independently configurable Home Assistant
 | Card | Type | Description | Documentation |
 | --- | --- | --- | --- |
 | Compact System Status Card | `custom:compact-system-status-card` | Compact numeric metrics with real Recorder sparklines and supplementary states. | [Configuration](docs/compact-system-status-card.md) |
+| Multi Metric Graph Card | `custom:multi-metric-graph-card` | Multiple configurable Recorder graphs, values, units, labels, and icons in one card. | [Configuration](docs/multi-metric-graph-card.md) |
 | Media Download Card | `custom:media-download-card` | Radarr/Sonarr queue artwork joined to qBittorrent progress and status. | [Configuration](docs/media-download-card.md) |
 
 ## Install with HACS
@@ -50,6 +51,35 @@ details:
 
 See [the full card documentation](docs/compact-system-status-card.md), including the exact NAS example, all options, history behavior, and responsive layouts.
 
+## Multi Metric Graph Card quick start
+
+```yaml
+type: custom:multi-metric-graph-card
+columns: 3
+show_icons: true
+metrics:
+  - entity: sensor.speedtest_download
+    name: Download
+    icon: mdi:download
+    unit: Mbps
+    min: 10
+    max: 70
+  - entity: sensor.speedtest_upload
+    name: Upload
+    icon: mdi:upload
+    unit: Mbps
+    min: 5
+    max: 30
+  - entity: sensor.speedtest_ping
+    name: Ping
+    icon: mdi:timer-outline
+    unit: ms
+    min: 2
+    max: 50
+```
+
+See [the full card documentation](docs/multi-metric-graph-card.md) for graph sizing, history, precision, colours, thresholds, and per-metric overrides.
+
 ## Media Download Card quick start
 
 Current Home Assistant Core actions require instance identifiers:
@@ -73,7 +103,7 @@ See [Media Download Card documentation](docs/media-download-card.md) for all opt
 
 1. Run `npm ci && npm run build`, or download `home-assistant-custom.js` from a release.
 2. Copy it to `<config>/www/home-assistant-custom.js`.
-3. Add `/local/home-assistant-custom.js?v=0.2.2` under **Settings → Dashboards → Resources** as a **JavaScript module**.
+3. Add `/local/home-assistant-custom.js?v=0.3.0` under **Settings → Dashboards → Resources** as a **JavaScript module**.
 4. Hard-refresh the browser.
 
 This installs the same shared bundle used by HACS.

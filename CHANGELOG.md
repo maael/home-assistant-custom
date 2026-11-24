@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.3.0] - 2026-11-24
+
+### Added
+
+- Multi Metric Graph Card for combining configurable Recorder graphs, labels, values, units, and optional icons in one responsive card.
+- Per-metric graph bounds, precision, colours, thresholds, history duration, and visibility controls.
+- Visual editor, card-picker metadata, documentation, development preview, and automated tests for the new card.
+
 ## [0.2.2] - 2026-11-24
 
 ### Changed
@@ -65,6 +73,7 @@
 - Responsive poster grid, progress/status display, polling, partial-failure handling, and configuration options.
 - Synthetic fixtures, transformation and mocked-browser tests, CI, release automation, and installation documentation.
 
+[0.3.0]: https://github.com/maael/home-assistant-custom/releases/tag/v0.3.0
 [0.2.2]: https://github.com/maael/home-assistant-custom/releases/tag/v0.2.2
 [0.2.1]: https://github.com/maael/home-assistant-custom/releases/tag/v0.2.1
 [0.2.0]: https://github.com/maael/home-assistant-custom/releases/tag/v0.2.0
