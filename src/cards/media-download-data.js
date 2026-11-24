@@ -2,7 +2,7 @@ export const DEFAULT_CONFIG = Object.freeze({
   title: "Media Downloads",
   radarr: { action: "get_queue", service_data: {} },
   sonarr: { action: "get_queue", service_data: {} },
-  qbittorrent: { action: "get_torrents", service_data: {} },
+  qbittorrent: { action: "get_torrents", service_data: {}, download_speed_entity: null },
   appearance: {
     columns: 4, rows: 2, gap: 8, border_radius: 8, show_title: false,
     show_episode: true, show_eta: true, show_summary: true,
@@ -57,6 +57,10 @@ export function mergeConfig(config = {}) {
   a.progress_decimals = number(a.progress_decimals, 1, 0, 3, true);
   a.inactive_opacity = number(a.inactive_opacity, 0.65, 0.1, 1);
   merged.behaviour.refresh_interval = number(merged.behaviour.refresh_interval, 10, 2, 3600);
+  const speedEntity = merged.qbittorrent.download_speed_entity;
+  if (speedEntity !== null && speedEntity !== undefined && (typeof speedEntity !== "string" || !speedEntity.startsWith("sensor."))) {
+    throw new Error("qbittorrent.download_speed_entity must be a sensor entity ID.");
+  }
   return merged;
 }
 
@@ -133,17 +137,36 @@ export function formatEta(seconds) {
   return `${secs}s`;
 }
 
-export function classifyTorrent(torrent = {}) {
-  const raw = String(torrent.status ?? torrent.state ?? "").trim();
-  const state = raw.toLowerCase();
+export function torrentDownloadSpeed(torrent = {}) {
   const speedFields = ["download_speed", "downloadSpeed", "dlspeed", "dl_speed", "speed"];
-  let speed = null;
   for (const field of speedFields) {
     if (torrent[field] !== undefined && torrent[field] !== null && torrent[field] !== "") {
       const candidate = Number(torrent[field]);
-      if (Number.isFinite(candidate) && candidate >= 0) { speed = candidate; break; }
+      if (Number.isFinite(candidate) && candidate >= 0) return candidate;
     }
   }
+  return null;
+}
+
+export function totalTorrentDownloadSpeed(torrents = []) {
+  const speeds = torrents.map(torrentDownloadSpeed).filter((speed) => speed !== null);
+  return speeds.length ? speeds.reduce((total, speed) => total + speed, 0) : null;
+}
+
+export function formatDataRate(bytesPerSecond) {
+  if (!Number.isFinite(bytesPerSecond) || bytesPerSecond < 0) return null;
+  const units = ["B/s", "kB/s", "MB/s", "GB/s", "TB/s"];
+  let value = bytesPerSecond;
+  let unit = 0;
+  while (value >= 1000 && unit < units.length - 1) { value /= 1000; unit++; }
+  const decimals = unit === 0 ? 0 : value >= 100 ? 0 : value >= 10 ? 1 : 2;
+  return `${value.toFixed(decimals)} ${units[unit]}`;
+}
+
+export function classifyTorrent(torrent = {}) {
+  const raw = String(torrent.status ?? torrent.state ?? "").trim();
+  const state = raw.toLowerCase();
+  const speed = torrentDownloadSpeed(torrent);
   const completed = COMPLETED_STATES.has(state);
   const error = ERROR_STATES.has(state) || state.includes("error");
   const stateActive = ACTIVE_STATES.has(state);

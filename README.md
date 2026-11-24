@@ -1,6 +1,6 @@
 # Home Assistant Custom
 
-A single HACS Dashboard repository for independently configurable Home Assistant custom cards. The bundle currently includes **Media Download Card**.
+A single HACS Dashboard repository for independently configurable Home Assistant custom cards. The bundle currently includes **Media Download Card**, with queue artwork, progress, status, counts, and qBittorrent download speed.
 
 > **v0.1.x is prerelease software.** The action names and response keys were verified against Home Assistant Core's development source, but have not been validated against the maintainer's live Home Assistant instance.
 
@@ -27,6 +27,8 @@ radarr:
 sonarr:
   entry_id: YOUR_SONARR_CONFIG_ENTRY_ID
 qbittorrent:
+  # Optional if the card can auto-detect this sensor:
+  download_speed_entity: sensor.qbittorrent_download_speed
   service_data:
     device_id: YOUR_QBITTORRENT_DEVICE_ID
     torrent_filter: all

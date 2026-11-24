@@ -1,13 +1,14 @@
 import {
-  buildMediaDownloads, extractCollection, formatEta, mergeConfig, serviceCallMessage,
+  buildMediaDownloads, extractCollection, formatDataRate, formatEta, mergeConfig,
+  serviceCallMessage, totalTorrentDownloadSpeed,
 } from "./media-download-data.js";
 
 const STYLE = `
   :host { display:block; container-type:inline-size; }
   ha-card { overflow:hidden; }
-  .header { display:flex; align-items:baseline; justify-content:space-between; gap:12px; padding:16px 16px 8px; }
-  .heading { font-size:var(--ha-card-header-font-size, 20px); font-weight:500; color:var(--primary-text-color); }
-  .summary { font-size:12px; color:var(--secondary-text-color); text-align:right; }
+  .header { display:flex; align-items:baseline; gap:12px; padding:16px 16px 8px; white-space:nowrap; }
+  .heading { flex:0 0 auto; font-size:var(--ha-card-header-font-size, 20px); font-weight:500; color:var(--primary-text-color); }
+  .summary { min-width:0; flex:1 1 auto; overflow:hidden; text-overflow:ellipsis; font-size:12px; color:var(--secondary-text-color); text-align:right; }
   .stale { color:var(--warning-color, #ff9800); font-weight:600; }
   .message { padding:16px; color:var(--secondary-text-color); }
   .message.error { color:var(--error-color, #db4437); }
@@ -40,6 +41,7 @@ export class MediaDownloadCard extends HTMLElement {
     this._sources = { radarr: null, sonarr: null, qbittorrent: null };
     this._errors = {};
     this._items = [];
+    this._torrentSpeed = null;
     this._nodes = new Map();
     this._generation = 0;
     this._inFlight = false;
@@ -58,6 +60,7 @@ export class MediaDownloadCard extends HTMLElement {
     const first = !this._hass;
     this._hass = value;
     if (first && this.isConnected && this._config) this._restartPolling(true);
+    else if (this._config) this._renderSummary();
   }
 
   connectedCallback() {
@@ -134,10 +137,11 @@ export class MediaDownloadCard extends HTMLElement {
     this._errors = nextErrors;
     const hasArr = this._sources.radarr !== null || this._sources.sonarr !== null;
     if (hasArr) {
+      const torrents = this._sources.qbittorrent || [];
       this._items = buildMediaDownloads({
-        movies: this._sources.radarr || [], shows: this._sources.sonarr || [],
-        torrents: this._sources.qbittorrent || [],
+        movies: this._sources.radarr || [], shows: this._sources.sonarr || [], torrents,
       }, this._config.behaviour);
+      this._torrentSpeed = totalTorrentDownloadSpeed(torrents);
       this._loaded = true;
     }
     this._inFlight = false;
@@ -154,18 +158,54 @@ export class MediaDownloadCard extends HTMLElement {
     if (!this._config) return;
     const errorNames = Object.keys(this._errors);
     this._heading.textContent = this._config.title;
-    const active = this._items.filter((item) => item.active).length;
-    this._summary.textContent = this._config.appearance.show_summary ? `${active} active · ${this._items.length - active} inactive` : "";
-    if (errorNames.length && this._loaded) {
-      const stale = document.createElement("span"); stale.className = "stale";
-      stale.textContent = `Stale (${errorNames.join(", ")})`;
-      this._summary.append(document.createTextNode(this._summary.textContent ? " · " : ""), stale);
-    }
+    this._renderSummary();
     this._header.hidden = !this._config.title && !this._config.appearance.show_summary;
     if (!this._loaded && this._inFlight) this._showMessage("Loading media downloads…");
     else if (!this._loaded && errorNames.length) this._showMessage(`Unable to load queues: ${errorNames.map((name) => `${name}: ${this._errors[name]}`).join("; ")}`, true);
     else if (!this._items.length) this._showMessage(errorNames.length ? "No downloads to show. Some queue data is stale." : "No current media downloads.");
     else { this._message.hidden = true; this._grid.hidden = false; this._renderItems(); }
+  }
+
+  _renderSummary() {
+    if (!this._config) return;
+    this._summary.replaceChildren();
+    this._summary.title = "";
+    if (!this._config.appearance.show_summary || !this._loaded) return;
+    const movies = this._sources.radarr?.length || 0;
+    const shows = this._sources.sonarr?.length || 0;
+    const torrents = this._sources.qbittorrent?.length || 0;
+    const plural = (count, singular, pluralForm = `${singular}s`) => `${count} ${count === 1 ? singular : pluralForm}`;
+    const speed = this._downloadSpeedText() || "—";
+    this._summary.append(document.createTextNode(`${plural(movies, "movie")} · ${plural(shows, "TV show")} · ${plural(torrents, "torrent")} · ↓ ${speed}`));
+    const errorNames = Object.keys(this._errors);
+    if (errorNames.length) {
+      const stale = document.createElement("span");
+      stale.className = "stale";
+      stale.textContent = `Stale (${errorNames.join(", ")})`;
+      this._summary.append(document.createTextNode(" · "), stale);
+    }
+    this._summary.title = this._summary.textContent;
+  }
+
+  _downloadSpeedText() {
+    const configured = this._config.qbittorrent.download_speed_entity;
+    let state = configured ? this._hass?.states?.[configured] : null;
+    if (!state && !configured) {
+      const candidates = Object.entries(this._hass?.states || {}).filter(([entityId, candidate]) => {
+        const attributes = candidate.attributes || {};
+        const text = `${entityId} ${attributes.friendly_name || ""} ${attributes.translation_key || ""}`.toLowerCase();
+        return attributes.device_class === "data_rate" && /download[ _-]*speed/.test(text) && /q[ _-]*bittorrent|qbittorrent/.test(text);
+      });
+      if (candidates.length === 1) state = candidates[0][1];
+    }
+    if (state && !["unknown", "unavailable"].includes(String(state.state).toLowerCase())) {
+      try {
+        if (typeof this._hass?.formatEntityState === "function") return this._hass.formatEntityState(state);
+      } catch { /* Fall back to the raw state and unit. */ }
+      const unit = state.attributes?.unit_of_measurement;
+      return `${state.state}${unit ? ` ${unit}` : ""}`;
+    }
+    return formatDataRate(this._torrentSpeed);
   }
 
   _showMessage(text, error = false) {

@@ -2,8 +2,8 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import {
-  buildMediaDownloads, classifyTorrent, extractCollection, formatEta, mergeConfig,
-  parseEta, parsePercent, serviceCallMessage,
+  buildMediaDownloads, classifyTorrent, extractCollection, formatDataRate, formatEta,
+  mergeConfig, parseEta, parsePercent, serviceCallMessage, totalTorrentDownloadSpeed,
 } from "../src/cards/media-download-data.js";
 
 const fixture = JSON.parse(await readFile(new URL("./fixtures/responses.json", import.meta.url)));
@@ -43,7 +43,7 @@ test("uses qBittorrent percent as 0-100 and falls back to Arr size progress", ()
   assert.equal(item.progress, 75);
 });
 
-test("maps download states and respects numeric speed when supplied", () => {
+test("maps download states and aggregates numeric speed when supplied", () => {
   assert.equal(classifyTorrent({ status: "forcedDL" }).active, true);
   assert.equal(classifyTorrent({ status: "downloading", dlspeed: 0 }).kind, "stalled");
   assert.equal(classifyTorrent({ status: "downloading", dlspeed: 1 }).active, true);
@@ -51,6 +51,9 @@ test("maps download states and respects numeric speed when supplied", () => {
   assert.equal(classifyTorrent({ status: "queuedDL" }).kind, "queued");
   assert.equal(classifyTorrent({ status: "checkingDL" }).kind, "pending");
   assert.equal(classifyTorrent({ status: "mystery" }).kind, "unknown");
+  assert.equal(totalTorrentDownloadSpeed([{ dlspeed: 1200 }, { download_speed: 300 }]), 1500);
+  assert.equal(totalTorrentDownloadSpeed([{ status: "downloading" }]), null);
+  assert.equal(formatDataRate(12500000), "12.5 MB/s");
 });
 
 test("parses normal and long-hour ETAs but rejects huge sentinels", () => {
@@ -83,4 +86,5 @@ test("merges defaults, validates values, and creates WebSocket service messages"
     service_data: { extra: true, entry_id: "entry" }, return_response: true,
   });
   assert.throws(() => mergeConfig({ qbittorrent: { service_data: "bad" } }), /service_data/);
+  assert.throws(() => mergeConfig({ qbittorrent: { download_speed_entity: "switch.bad" } }), /sensor entity ID/);
 });

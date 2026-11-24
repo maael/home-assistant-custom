@@ -13,14 +13,12 @@ The card accepts mappings or arrays, normal response envelopes, and entity-keyed
 ### HACS custom repository
 
 1. In HACS, add `https://github.com/maael/home-assistant-custom` as a **Dashboard** custom repository.
-2. Download **Home Assistant Custom**. For the initial prerelease, select `v0.1.0` from HACS's version/redownload menu if it is not offered by default.
+2. Download **Home Assistant Custom**. For prerelease versions, select the newest version from HACS's version/redownload menu if it is not offered by default.
 3. Reload the browser. HACS normally registers this module automatically:
 
 ```text
 /hacsfiles/home-assistant-custom/home-assistant-custom.js
 ```
-
-The repository is currently private at initial implementation time. HACS distribution to other users requires making it public; that visibility change must be approved by the owner.
 
 ### Manual local installation
 
@@ -28,7 +26,7 @@ The repository is currently private at initial implementation time. HACS distrib
 2. Copy it to `<config>/www/home-assistant-custom.js`.
 3. If `www` was newly created, restart Home Assistant.
 4. Go to **Settings → Dashboards → Resources → Add resource**.
-5. Add `/local/home-assistant-custom.js?v=0.1.0` as **JavaScript module**.
+5. Add `/local/home-assistant-custom.js?v=0.1.1` as **JavaScript module**.
 6. Hard-refresh the browser.
 
 ## Minimal usable YAML
@@ -64,6 +62,7 @@ sonarr:
   service_data: {}
 qbittorrent:
   action: get_torrents
+  download_speed_entity: sensor.qbittorrent_download_speed
   service_data:
     device_id: your_qbittorrent_device_id
     torrent_filter: all
@@ -108,6 +107,7 @@ Each integration supports:
 | `action` | `get_queue` / `get_torrents` | Action name within that integration domain. |
 | `service_data` | `{}` | Arbitrary action parameters. |
 | `entry_id` | unset | Convenience config entry ID, added to `service_data.entry_id` unless already present. Current Radarr and Sonarr actions require it. Current qBittorrent instead requires `service_data.device_id`. |
+| `qbittorrent.download_speed_entity` | auto-detected | qBittorrent download-speed sensor. Set this explicitly if the card cannot uniquely detect it. |
 
 ### `appearance`
 
@@ -120,7 +120,7 @@ Each integration supports:
 | `show_title` | `false` | Show media titles below posters. Titles remain in accessible labels. |
 | `show_episode` | `true` | Show TV season/episode information. Movie entries reserve the same alignment line. |
 | `show_eta` | `true` | Show ETA for active downloads and status for inactive downloads. |
-| `show_summary` | `true` | Show active/inactive counts and stale state. |
+| `show_summary` | `true` | Show one compact line with queued movie, TV show, and torrent counts plus total download speed and stale state. |
 | `progress_colour` | `#4CAF50` | Active progress bar colour. |
 | `progress_bar_height` | `5` | Progress bar height in pixels. |
 | `progress_text_size` | `16` | Percentage text size in pixels. |
@@ -147,7 +147,8 @@ Each integration supports:
 - qBittorrent progress is interpreted as 0–100. Arr progress and then `size`/`size_left` are fallbacks.
 - Unmatched Arr entries show **Unknown status**, not Paused. Unrelated qBittorrent torrents are ignored.
 - Recognized download states include downloading, forcedDL, stalledDL, queuedDL, pausedDL, stoppedDL, checkingDL, metaDL, errors, and unknown values.
-- If a numeric speed field is present, zero is inactive and a positive value can be active subject to state. When speed is absent, qBittorrent state is only a proxy; exact zero-speed detection is impossible and no speed is invented.
+- The header reports total qBittorrent download speed from `qbittorrent.download_speed_entity`. The card automatically detects a unique qBittorrent data-rate sensor named “Download speed”; configure the entity explicitly if detection is ambiguous. If future torrent action responses contain numeric speed fields, their sum is used as a fallback.
+- For individual torrent activity, a numeric speed field means zero is inactive and positive can be active subject to state. Current `get_torrents` responses omit per-torrent speed, so state remains a proxy and exact zero-speed detection is impossible.
 - ETA supports numeric seconds and `HH:MM:SS` with hours beyond 24. Null, `None`, invalid values, and estimates over 365 days (including observed sentinel values) become **Unknown ETA**. Arr `time_left` is a fallback.
 - Artwork permits only HTTP(S) URLs. Broken or absent posters get a text fallback.
 - Partial action failures retain the last good source data and mark the card **Stale**.
@@ -159,8 +160,9 @@ Each integration supports:
 - **Action needs parameters:** current Radarr/Sonarr require `entry_id`; current qBittorrent requires `service_data.device_id` and uses `torrent_filter`. Add any version-specific parameters exactly as Developer Tools requires.
 - **Missing `movies`/`shows`/`torrents`:** inspect the action response. The card intentionally reports this as an error rather than pretending the queue is empty.
 - **Everything is unknown:** verify the Arr `download_id` and qBittorrent `id` refer to the same torrent hash.
-- **Progress moves but active detection is imperfect:** the sample qBittorrent response has no download speed; state is therefore used as a proxy.
+- **Header shows `↓ —`:** set `qbittorrent.download_speed_entity` to the entity shown under **Settings → Devices & services → qBittorrent → Entities** with the name **Download speed**.
+- **Progress moves but active detection is imperfect:** current qBittorrent action responses have no per-torrent download speed; state is therefore used as a proxy.
 
 ## Updates and rollback
 
-Use HACS's update flow, then reload the frontend. To roll back, open the HACS repository version/redownload menu and choose an earlier release. For manual installs, replace the JS file and increment the resource query string (for example `?v=0.1.1`) to bypass browser cache.
+Use HACS's update flow, then reload the frontend. To roll back, open the HACS repository version/redownload menu and choose an earlier release. For manual installs, replace the JS file and increment the resource query string (for example `?v=0.1.2`) to bypass browser cache.
