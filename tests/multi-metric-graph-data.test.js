@@ -5,6 +5,7 @@ import { mergeMultiMetricGraphConfig } from "../src/cards/multi-metric-graph-dat
 test("validates and applies multi metric graph defaults", () => {
   const config = mergeMultiMetricGraphConfig({ metrics: [{ entity: "sensor.download" }] });
   assert.equal(config.columns, 3);
+  assert.equal(config.stack_on_narrow, false);
   assert.equal(config.graph_height, 120);
   assert.equal(config.card_height, null);
   assert.equal(config.hours_to_show, 24);

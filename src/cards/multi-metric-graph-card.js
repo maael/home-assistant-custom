@@ -34,8 +34,8 @@ const STYLE = `
   .graph { display:block; width:100%; height:100%; pointer-events:none; }
   .empty { position:absolute; inset:0; display:grid; place-items:center; color:var(--secondary-text-color); font-size:11px; opacity:.65; }
   @container (max-width:420px) {
-    .metrics { grid-template-columns:1fr; }
-    .metric:not(:first-child) { border-left:0; border-top:1px solid var(--divider-color, rgba(127,127,127,.18)); }
+    .stack-on-narrow .metrics { grid-template-columns:1fr; }
+    .stack-on-narrow .metric:not(:first-child) { border-left:0; border-top:1px solid var(--divider-color, rgba(127,127,127,.18)); }
   }
 `;
 
@@ -151,6 +151,7 @@ export class MultiMetricGraphCard extends HTMLElement {
     if (!this._config) return;
     const style = document.createElement("style"); style.textContent = STYLE;
     const card = document.createElement("ha-card");
+    if (this._config.stack_on_narrow) card.classList.add("stack-on-narrow");
     card.style.setProperty("--columns", this._config.columns);
     card.style.setProperty("--graph-height", `${this._config.graph_height}px`);
     if (this._config.card_height) {
@@ -251,7 +252,7 @@ export class MultiMetricGraphCardEditor extends HTMLElement {
   _emit(config) { this._config = config; this.dispatchEvent(new CustomEvent("config-changed", { bubbles: true, composed: true, detail: { config } })); this._render(); }
   _render() {
     if (!this._config) return;
-    this.shadowRoot.innerHTML = `<style>${EDITOR_STYLE}</style><div class="form"><label>Title<input data-key="title" value="${this._escape(this._config.title || "")}"></label><div class="row"><label>Columns<input data-key="columns" type="number" min="1" max="12" value="${this._config.columns ?? 3}"></label><label>Card height (optional)<input data-key="card_height" type="number" min="60" max="1000" placeholder="Automatic" value="${this._config.card_height ?? ""}"></label></div><div class="row"><label>Graph height<input data-key="graph_height" type="number" min="16" max="300" value="${this._config.graph_height ?? 120}"></label><label>History hours<input data-key="hours_to_show" type="number" min="0.25" step="0.25" value="${this._config.hours_to_show ?? 24}"></label></div><div class="row"><label>Value position<select data-key="value_position"><option value="right">Right</option><option value="center">Center</option></select></label><label>Value size (px)<input data-key="value_size" type="number" min="8" max="96" placeholder="Theme default" value="${this._config.value_size ?? ""}"></label></div><div class="row"><label><span><input data-key="show_icons" type="checkbox" ${this._config.show_icons ? "checked" : ""}> Show icons</span></label><label><span><input data-key="show_names" type="checkbox" ${this._config.show_names !== false ? "checked" : ""}> Show metric names</span></label></div><label><span><input data-key="show_title" type="checkbox" ${this._config.show_title ? "checked" : ""}> Show card title</span></label><h4>Metrics</h4><div class="list metrics"></div><button class="add-metric">Add metric</button></div>`;
+    this.shadowRoot.innerHTML = `<style>${EDITOR_STYLE}</style><div class="form"><label>Title<input data-key="title" value="${this._escape(this._config.title || "")}"></label><div class="row"><label>Columns<input data-key="columns" type="number" min="1" max="12" value="${this._config.columns ?? 3}"></label><label>Card height (optional)<input data-key="card_height" type="number" min="60" max="1000" placeholder="Automatic" value="${this._config.card_height ?? ""}"></label></div><div class="row"><label>Graph height<input data-key="graph_height" type="number" min="16" max="300" value="${this._config.graph_height ?? 120}"></label><label>History hours<input data-key="hours_to_show" type="number" min="0.25" step="0.25" value="${this._config.hours_to_show ?? 24}"></label></div><div class="row"><label>Value position<select data-key="value_position"><option value="right">Right</option><option value="center">Center</option></select></label><label>Value size (px)<input data-key="value_size" type="number" min="8" max="96" placeholder="Theme default" value="${this._config.value_size ?? ""}"></label></div><div class="row"><label><span><input data-key="show_icons" type="checkbox" ${this._config.show_icons ? "checked" : ""}> Show icons</span></label><label><span><input data-key="show_names" type="checkbox" ${this._config.show_names !== false ? "checked" : ""}> Show metric names</span></label></div><div class="row"><label><span><input data-key="show_title" type="checkbox" ${this._config.show_title ? "checked" : ""}> Show card title</span></label><label><span><input data-key="stack_on_narrow" type="checkbox" ${this._config.stack_on_narrow ? "checked" : ""}> Stack on narrow cards</span></label></div><h4>Metrics</h4><div class="list metrics"></div><button class="add-metric">Add metric</button></div>`;
     this.shadowRoot.querySelector('[data-key="value_position"]').value = this._config.value_position || "right";
     this._renderItems(this._config.metrics || []);
     this.shadowRoot.querySelectorAll("[data-key]").forEach((input) => input.addEventListener("change", () => {

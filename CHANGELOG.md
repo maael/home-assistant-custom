@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.5] - 2026-11-24
+
+### Changed
+
+- Multi Metric Graph Card columns now remain horizontal at narrow container widths by default.
+- Added optional `stack_on_narrow: true` to restore vertical stacking below 420px when desired.
+
 ## [0.3.4] - 2026-11-24
 
 ### Added
@@ -101,6 +108,7 @@
 - Responsive poster grid, progress/status display, polling, partial-failure handling, and configuration options.
 - Synthetic fixtures, transformation and mocked-browser tests, CI, release automation, and installation documentation.
 
+[0.3.5]: https://github.com/maael/home-assistant-custom/releases/tag/v0.3.5
 [0.3.4]: https://github.com/maael/home-assistant-custom/releases/tag/v0.3.4
 [0.3.3]: https://github.com/maael/home-assistant-custom/releases/tag/v0.3.3
 [0.3.2]: https://github.com/maael/home-assistant-custom/releases/tag/v0.3.2

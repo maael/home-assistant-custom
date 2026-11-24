@@ -4,6 +4,7 @@ export const DEFAULT_MULTI_METRIC_GRAPH_CONFIG = Object.freeze({
   title: null,
   show_title: false,
   columns: 3,
+  stack_on_narrow: false,
   graph_height: 120,
   card_height: null,
   hours_to_show: 24,
@@ -37,6 +38,7 @@ export function mergeMultiMetricGraphConfig(config) {
   };
   if (merged.title !== null && typeof merged.title !== "string") throw new Error("title must be a string or null.");
   merged.show_title = Boolean(merged.show_title);
+  merged.stack_on_narrow = Boolean(merged.stack_on_narrow);
   merged.show_icons = Boolean(merged.show_icons);
   merged.show_names = Boolean(merged.show_names);
   merged.show_graphs = Boolean(merged.show_graphs);

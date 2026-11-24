@@ -42,13 +42,16 @@ metrics:
 
 The card uses the entity friendly name, unit, and icon when their overrides are omitted. Icons are hidden by default. Set `show_icons: true` globally or `show_icon: true` on an individual metric. The optional icon and metric name are overlaid at the top-left of the graph while the current entity value is overlaid at the top-right.
 
+Metrics remain in the configured number of columns even when the dashboard gives the card a narrow container. Set `stack_on_narrow: true` only when vertical stacking below 420px is desired.
+
 ## Card options
 
 | Option | Default | Description |
 | --- | --- | --- |
 | `title` | none | Optional card title. |
 | `show_title` | `false` | Display the configured title. |
-| `columns` | `3` | Number of graph columns, from 1 to 12. The card stacks them below 420 px. |
+| `columns` | `3` | Number of graph columns, from 1 to 12. Columns remain horizontal regardless of card width by default. |
+| `stack_on_narrow` | `false` | Stack metrics vertically when the card is narrower than 420px. |
 | `graph_height` | `120` | Graph-area height in pixels when `card_height` is not set, clamped to 16–300. |
 | `card_height` | automatic | Optional total card height in pixels, clamped to 60–1000. Graphs expand to use the remaining height. Heights below 120 use compact labels, values, icons, and spacing. |
 | `hours_to_show` | `24` | Default Recorder history window in hours, from 0.25 to 720. |

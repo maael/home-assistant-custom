@@ -58,6 +58,7 @@ test("registers and renders multiple graphs, labels, values, units and icons", a
   assert.match(card.shadowRoot.textContent, /Download54\.3 Mbps/);
   assert.match(card.shadowRoot.textContent, /Ping7 ms/);
   assert.equal(card.shadowRoot.querySelector("ha-card").style.getPropertyValue("--columns"), "3");
+  assert.equal(card.shadowRoot.querySelector("ha-card").classList.contains("stack-on-narrow"), false);
   assert.equal(card.shadowRoot.querySelector("ha-card").style.getPropertyValue("--graph-height"), "120px");
   assert.equal(card.shadowRoot.querySelectorAll(".label").length, 3);
   assert.equal(card.shadowRoot.querySelectorAll(".chart > .info").length, 3);
@@ -110,6 +111,13 @@ test("supports centered values and configurable value sizes", () => {
   assert.equal(card.shadowRoot.querySelector(".value").style.getPropertyValue("--value-size"), "28px");
 });
 
+test("only stacks narrow cards when explicitly enabled", () => {
+  const card = document.createElement("multi-metric-graph-card");
+  card.setConfig(config({ stack_on_narrow: true }));
+  assert.equal(card.shadowRoot.querySelector("ha-card").classList.contains("stack-on-narrow"), true);
+  assert.match(card.shadowRoot.querySelector("style").textContent, /\.stack-on-narrow \.metrics/);
+});
+
 test("supports explicit normal and compact total card heights", () => {
   const card = document.createElement("multi-metric-graph-card");
   card.setConfig(config({ card_height: 260 }));
@@ -134,6 +142,7 @@ test("provides an editor and Sections sizing metadata", async () => {
   assert.ok(editor.shadowRoot.querySelector('[data-key="show_names"]'));
   assert.ok(editor.shadowRoot.querySelector('[data-key="value_position"]'));
   assert.ok(editor.shadowRoot.querySelector('[data-key="value_size"]'));
+  assert.ok(editor.shadowRoot.querySelector('[data-key="stack_on_narrow"]'));
   const card = document.createElement("multi-metric-graph-card");
   card.setConfig(config());
   assert.ok(card.getCardSize() >= 3);
