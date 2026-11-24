@@ -10,6 +10,7 @@ test("validates and applies multi metric graph defaults", () => {
   assert.equal(config.hours_to_show, 24);
   assert.equal(config.refresh_interval, 60);
   assert.equal(config.show_icons, false);
+  assert.equal(config.show_names, true);
   assert.equal(config.metrics[0].decimals, 0);
   assert.throws(() => mergeMultiMetricGraphConfig({ metrics: [] }), /non-empty/);
   assert.throws(() => mergeMultiMetricGraphConfig({ metrics: [{ entity: "bad" }] }), /entity ID/);
@@ -20,7 +21,7 @@ test("normalizes card and per-metric graph options", () => {
   const config = mergeMultiMetricGraphConfig({
     columns: 99, graph_height: 20, card_height: 240, graph_opacity: 2, graph_fill_opacity: -1,
     metrics: [{
-      entity: "sensor.download", decimals: 9, hours_to_show: 6, show_icon: true,
+      entity: "sensor.download", decimals: 9, hours_to_show: 6, show_icon: true, show_name: false,
       show_graph: false, min: "10", max: "70",
       color_thresholds: [{ value: 50, color: "orange" }, { value: 20, color: "green" }],
     }],
@@ -32,6 +33,7 @@ test("normalizes card and per-metric graph options", () => {
   assert.equal(config.graph_fill_opacity, 0);
   assert.equal(config.metrics[0].decimals, 6);
   assert.equal(config.metrics[0].show_icon, true);
+  assert.equal(config.metrics[0].show_name, false);
   assert.equal(config.metrics[0].show_graph, false);
   assert.deepEqual(config.metrics[0].color_thresholds.map((entry) => entry.value), [20, 50]);
   assert.equal(mergeMultiMetricGraphConfig({ graph_height: 1, card_height: 30, metrics: [{ entity: "sensor.download" }] }).graph_height, 16);

@@ -60,19 +60,21 @@ test("registers and renders multiple graphs, labels, values, units and icons", a
   assert.equal(card.shadowRoot.querySelector("ha-card").style.getPropertyValue("--columns"), "3");
   assert.equal(card.shadowRoot.querySelector("ha-card").style.getPropertyValue("--graph-height"), "120px");
   assert.equal(card.shadowRoot.querySelectorAll(".label").length, 3);
-  assert.equal(card.shadowRoot.querySelectorAll(".balance").length, 3);
-  assert.match(card.shadowRoot.querySelector("style").textContent, /grid-template-columns:minmax\(0, 1fr\) auto minmax\(0, 1fr\)/);
+  assert.equal(card.shadowRoot.querySelectorAll(".chart > .info").length, 3);
+  assert.match(card.shadowRoot.querySelector("style").textContent, /justify-content:space-between/);
+  assert.match(card.shadowRoot.querySelector("style").textContent, /text-align:right/);
   card.remove();
 });
 
 test("updates current values without refetching and supports per-metric icon visibility", async () => {
   let calls = 0;
   const card = document.createElement("multi-metric-graph-card");
-  card.setConfig(config({ show_icons: false, metrics: [{ entity: "sensor.download", name: "Download", unit: "Mbps", show_icon: true, decimals: 1 }, { entity: "sensor.ping", name: "Ping", unit: "ms" }] }));
+  card.setConfig(config({ show_icons: false, metrics: [{ entity: "sensor.download", name: "Download", unit: "Mbps", show_icon: true, decimals: 1 }, { entity: "sensor.ping", name: "Ping", unit: "ms", show_name: false }] }));
   card.hass = { states, locale: { language: "en" }, connection: { connected: true }, callWS: async ({ entity_ids }) => { calls++; return history(entity_ids); } };
   document.body.append(card);
   await new Promise((resolve) => setTimeout(resolve, 15));
   assert.equal(card.shadowRoot.querySelectorAll("ha-icon").length, 1);
+  assert.equal(card.shadowRoot.querySelectorAll(".name").length, 1);
   card.hass = { ...card._hass, states: { ...states, "sensor.download": { ...states["sensor.download"], state: "60" } } };
   assert.match(card.shadowRoot.textContent, /Download60\.0 Mbps/);
   assert.equal(calls, 1);
@@ -116,6 +118,7 @@ test("provides an editor and Sections sizing metadata", async () => {
   editor.setConfig(config());
   assert.equal(editor.shadowRoot.querySelectorAll("ha-entity-picker").length, 3);
   assert.ok(editor.shadowRoot.querySelector('[data-key="card_height"]'));
+  assert.ok(editor.shadowRoot.querySelector('[data-key="show_names"]'));
   const card = document.createElement("multi-metric-graph-card");
   card.setConfig(config());
   assert.ok(card.getCardSize() >= 3);

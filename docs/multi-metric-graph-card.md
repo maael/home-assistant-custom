@@ -40,7 +40,7 @@ metrics:
     color: "#ff9f43"
 ```
 
-The card uses the entity friendly name, unit, and icon when their overrides are omitted. Icons are hidden by default. Set `show_icons: true` globally or `show_icon: true` on an individual metric. Each label and optional icon is left-aligned while the current entity value remains centred in its metric column.
+The card uses the entity friendly name, unit, and icon when their overrides are omitted. Icons are hidden by default. Set `show_icons: true` globally or `show_icon: true` on an individual metric. The optional icon and metric name are overlaid at the top-left of the graph while the current entity value is overlaid at the top-right.
 
 ## Card options
 
@@ -54,6 +54,7 @@ The card uses the entity friendly name, unit, and icon when their overrides are 
 | `hours_to_show` | `24` | Default Recorder history window in hours, from 0.25 to 720. |
 | `refresh_interval` | `60` | History refresh interval in seconds, clamped to 10–3600. |
 | `show_icons` | `false` | Default icon visibility. |
+| `show_names` | `true` | Default metric-name visibility. |
 | `show_graphs` | `true` | Default graph visibility. |
 | `graph_opacity` | `0.8` | Default line opacity, from 0 to 1. |
 | `graph_fill_opacity` | `0.14` | Default area-fill opacity, from 0 to 1. |
@@ -67,6 +68,7 @@ The card uses the entity friendly name, unit, and icon when their overrides are 
 | `name` | entity friendly name | Label shown above the current value. |
 | `icon` | entity icon | Material Design icon override. |
 | `show_icon` | card `show_icons` | Per-metric icon visibility. |
+| `show_name` | card `show_names` | Per-metric name visibility. The icon can remain visible when the name is hidden. |
 | `unit` | entity unit | Unit appended to the current number. |
 | `decimals` | `0` | Number of decimal places, from 0 to 6. |
 | `color` | theme primary colour | Value, icon, line, and fill colour. |

@@ -9,6 +9,7 @@ export const DEFAULT_MULTI_METRIC_GRAPH_CONFIG = Object.freeze({
   hours_to_show: 24,
   refresh_interval: 60,
   show_icons: false,
+  show_names: true,
   show_graphs: true,
   graph_opacity: 0.8,
   graph_fill_opacity: 0.14,
@@ -35,6 +36,7 @@ export function mergeMultiMetricGraphConfig(config) {
   if (merged.title !== null && typeof merged.title !== "string") throw new Error("title must be a string or null.");
   merged.show_title = Boolean(merged.show_title);
   merged.show_icons = Boolean(merged.show_icons);
+  merged.show_names = Boolean(merged.show_names);
   merged.show_graphs = Boolean(merged.show_graphs);
   merged.columns = number(merged.columns, 3, 1, 12, true);
   merged.graph_height = number(merged.graph_height, 120, 16, 300, true);
@@ -56,6 +58,7 @@ function normalizeMetric(metric, index) {
   normalized.decimals = number(metric.decimals, 0, 0, 6, true);
   normalized.hours_to_show = metric.hours_to_show === undefined ? undefined : number(metric.hours_to_show, 24, 0.25, 720);
   normalized.show_icon = metric.show_icon === undefined ? undefined : Boolean(metric.show_icon);
+  normalized.show_name = metric.show_name === undefined ? undefined : Boolean(metric.show_name);
   normalized.show_graph = metric.show_graph === undefined ? undefined : Boolean(metric.show_graph);
   normalized.graph_opacity = metric.graph_opacity === undefined ? undefined : number(metric.graph_opacity, 0.8, 0, 1);
   normalized.graph_fill_opacity = metric.graph_fill_opacity === undefined ? undefined : number(metric.graph_fill_opacity, 0.14, 0, 1);
