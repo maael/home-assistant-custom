@@ -12,6 +12,7 @@ A single HACS Dashboard repository for independently configurable Home Assistant
 | Multi Metric Graph Card | `custom:multi-metric-graph-card` | Multiple configurable Recorder graphs, values, units, labels, and icons in one card. | [Configuration](docs/multi-metric-graph-card.md) |
 | Media Download Card | `custom:media-download-card` | Radarr/Sonarr queue artwork joined to qBittorrent progress and status. | [Configuration](docs/media-download-card.md) |
 | Fullscreen Toggle Badge | `custom:fullscreen-toggle-badge` | Compact fullscreen toggle with separate text, icons, and icon colours for each state. | [Configuration](docs/fullscreen-toggle-badge.md) |
+| Docker Status Badge | `custom:docker-status-badge` | Docker container totals, updates, errors, and health from existing Home Assistant entities. | [Configuration](docs/docker-status-badge.md) |
 
 ## Install with HACS
 
@@ -117,6 +118,19 @@ exit_icon_color: "#ff9800"
 
 See [Fullscreen Toggle Badge documentation](docs/fullscreen-toggle-badge.md) for styling, icon-only badges, F11 behavior, and migration from v0.4.0.
 
+## Docker Status Badge quick start
+
+Use existing numeric Home Assistant entities, including WUD REST sensors, without connecting the badge directly to Docker or WUD:
+
+```yaml
+type: custom:docker-status-badge
+total_entity: sensor.wud_containers
+updates_entity: sensor.wud_updates_available
+errors_entity: sensor.wud_errors
+```
+
+See [Docker Status Badge documentation](docs/docker-status-badge.md) for all entity, icon, colour, zero-visibility, health, and action options.
+
 ## Manual bundle installation
 
 1. Run `npm ci && npm run build`, or download `home-assistant-custom.js` from a release.
@@ -139,6 +153,6 @@ npm run preview
 
 The reproducible bundle is written to `dist/home-assistant-custom.js`. The deterministic browser preview is available at `http://localhost:4173/dev/preview.html` and uses mock Home Assistant states/history while rendering the actual card element.
 
-Add cards as modules under `src/cards/`, import them from `src/index.js`, and add tests and documentation. Existing cards remain independently configurable even though they share one distribution.
+Add cards under `src/cards/` or badges under `src/badges/`, import them from `src/index.js`, and add tests and documentation. Existing components remain independently configurable even though they share one distribution.
 
 Licensed under the [MIT License](LICENSE).
