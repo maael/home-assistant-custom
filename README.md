@@ -135,7 +135,7 @@ See [Docker Status Badge documentation](docs/docker-status-badge.md) for all ent
 
 1. Run `npm ci && npm run build`, or download `home-assistant-custom.js` from a release.
 2. Copy it to `<config>/www/home-assistant-custom.js`.
-3. Add `/local/home-assistant-custom.js?v=0.5.0` under **Settings → Dashboards → Resources** as a **JavaScript module**.
+3. Add `/local/home-assistant-custom.js?v=0.6.0` under **Settings → Dashboards → Resources** as a **JavaScript module**.
 4. Hard-refresh the browser.
 
 This installs the same shared bundle used by HACS.
