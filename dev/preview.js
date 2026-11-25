@@ -1,7 +1,9 @@
 class HaCard extends HTMLElement {}
 class HaIcon extends HTMLElement {}
+class HaBadge extends HTMLElement {}
 customElements.define("ha-card", HaCard);
 customElements.define("ha-icon", HaIcon);
+customElements.define("ha-badge", HaBadge);
 await import("../src/index.js");
 
 const baseStates = {
@@ -105,3 +107,22 @@ graphCard.setConfig({
   ],
 });
 graphCard.hass = mockHass(); graphFrame.append(graphCard); graphSection.append(graphTitle, graphFrame); gallery.prepend(graphSection);
+
+const badgeSection = document.createElement("section"); badgeSection.className = "example wide";
+const badgeTitle = document.createElement("h2"); badgeTitle.textContent = "Docker status badge states";
+const badgeFrame = document.createElement("div"); badgeFrame.className = "frame badge-frame";
+const dockerStates = [
+  ["Healthy", { total: "42", updates: "0", errors: "0" }, { show_zero_updates: false, show_zero_errors: false }],
+  ["Updates", { total: "42", updates: "5", errors: "0" }, {}],
+  ["Errors", { total: "42", updates: "0", errors: "2" }, {}],
+  ["Unavailable", { total: "42", updates: "unavailable", errors: "unknown" }, {}],
+];
+for (const [labelText, values, extraConfig] of dockerStates) {
+  const example = document.createElement("div"); example.className = "badge-example";
+  const label = document.createElement("span"); label.textContent = labelText;
+  const badge = document.createElement("docker-status-badge");
+  badge.setConfig({ total_entity: "sensor.docker_total", updates_entity: "sensor.docker_updates", errors_entity: "sensor.docker_errors", ...extraConfig });
+  badge.hass = mockHass({ "sensor.docker_total": state(values.total, "Containers"), "sensor.docker_updates": state(values.updates, "Updates"), "sensor.docker_errors": state(values.errors, "Errors") });
+  example.append(label, badge); badgeFrame.append(example);
+}
+badgeSection.append(badgeTitle, badgeFrame); gallery.prepend(badgeSection);

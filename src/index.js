@@ -2,6 +2,7 @@ import "./cards/media-download-card.js";
 import "./cards/compact-system-status-card.js";
 import "./cards/multi-metric-graph-card.js";
 import "./badges/fullscreen-toggle-badge.js";
+import "./badges/docker-status-badge.js";
 
 window.customCards = window.customCards || [];
 const cards = [
@@ -39,6 +40,13 @@ const badges = [
     description: "A configurable fullscreen badge with separate text, icons, and icon colours for each state.",
     preview: true,
     documentationURL: "https://github.com/maael/home-assistant-custom/blob/main/docs/fullscreen-toggle-badge.md",
+  },
+  {
+    type: "docker-status-badge",
+    name: "Docker Status Badge",
+    description: "Compact Docker container totals, updates, errors, and health from Home Assistant entities.",
+    preview: true,
+    documentationURL: "https://github.com/maael/home-assistant-custom/blob/main/docs/docker-status-badge.md",
   },
 ];
 for (const badge of badges) {

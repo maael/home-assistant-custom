@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+### Added
+
+- Docker Status Badge with configurable Home Assistant count entities, compact status icons, zero and unavailable handling, healthy-state indication, dashboard actions, visual editor, documentation, and automated tests.
+
 ## [0.5.0] - 2026-11-24
 
 ### Changed
