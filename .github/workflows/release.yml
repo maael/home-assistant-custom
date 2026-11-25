@@ -3,26 +3,100 @@ name: Release
 on:
   push:
     tags: ["v*"]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Release tag, matching package.json (for example v0.7.0)"
+        required: true
+        type: string
 
 permissions:
   contents: write
 
+concurrency:
+  group: release-${{ inputs.tag || github.ref_name }}
+  cancel-in-progress: false
+
 jobs:
   release:
     runs-on: ubuntu-latest
+    env:
+      RELEASE_TAG: ${{ inputs.tag || github.ref_name }}
     steps:
-      - uses: actions/checkout@v5
+      - name: Check out release source
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event_name == 'workflow_dispatch' && github.event.repository.default_branch || github.ref }}
+
       - uses: actions/setup-node@v5
         with:
           node-version-file: .nvmrc
           cache: npm
+
+      - name: Validate release tag and source
+        id: release_meta
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if [[ ! "${RELEASE_TAG}" =~ ^v[0-9]+\.[0-9]+\.[0-9]+([+-][0-9A-Za-z.-]+)?$ ]]; then
+            echo "Invalid release tag: ${RELEASE_TAG}" >&2
+            echo "Expected a tag such as v0.7.0 or v0.7.0-beta.1." >&2
+            exit 1
+          fi
+
+          expected_tag="v$(node -p 'require(`./package.json`).version')"
+          if [[ "${RELEASE_TAG}" != "${expected_tag}" ]]; then
+            echo "Release tag ${RELEASE_TAG} does not match package.json version ${expected_tag}." >&2
+            exit 1
+          fi
+
+          git fetch --force --tags origin
+          commit_sha="$(git rev-parse HEAD)"
+          tag_exists=false
+          if git rev-parse --verify --quiet "refs/tags/${RELEASE_TAG}" >/dev/null; then
+            tag_exists=true
+            tagged_sha="$(git rev-list -n 1 "${RELEASE_TAG}")"
+            if [[ "${tagged_sha}" != "${commit_sha}" ]]; then
+              echo "Tag ${RELEASE_TAG} already points to ${tagged_sha}, not ${commit_sha}." >&2
+              exit 1
+            fi
+          fi
+
+          echo "commit_sha=${commit_sha}" >> "${GITHUB_OUTPUT}"
+          echo "tag_exists=${tag_exists}" >> "${GITHUB_OUTPUT}"
+
       - run: npm ci
       - run: npm test
       - run: npm run build
-      - name: Verify tag matches package version
-        run: test "${GITHUB_REF_NAME}" = "v$(node -p 'require(`./package.json`).version')"
-      - uses: softprops/action-gh-release@v2
+      - name: Verify release bundle
+        run: test -s dist/home-assistant-custom.js
+
+      - name: Create release tag
+        if: github.event_name == 'workflow_dispatch' && steps.release_meta.outputs.tag_exists == 'false'
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git tag --annotate "${RELEASE_TAG}" --message "Release ${RELEASE_TAG}"
+          git push origin "refs/tags/${RELEASE_TAG}"
+
+      - name: Create GitHub prerelease
+        uses: softprops/action-gh-release@v2
         with:
+          tag_name: ${{ env.RELEASE_TAG }}
+          target_commitish: ${{ steps.release_meta.outputs.commit_sha }}
           prerelease: true
           generate_release_notes: true
           files: dist/home-assistant-custom.js
+
+      - name: Verify release asset
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          asset_count="$(gh release view "${RELEASE_TAG}" --json assets --jq '[.assets[] | select(.name == "home-assistant-custom.js")] | length')"
+          test "${asset_count}" -eq 1
