@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## [0.6.0] - 2026-11-25
 
 ### Added
 
@@ -129,6 +129,7 @@
 - Responsive poster grid, progress/status display, polling, partial-failure handling, and configuration options.
 - Synthetic fixtures, transformation and mocked-browser tests, CI, release automation, and installation documentation.
 
+[0.6.0]: https://github.com/maael/home-assistant-custom/releases/tag/v0.6.0
 [0.5.0]: https://github.com/maael/home-assistant-custom/releases/tag/v0.5.0
 [0.4.0]: https://github.com/maael/home-assistant-custom/releases/tag/v0.4.0
 [0.3.5]: https://github.com/maael/home-assistant-custom/releases/tag/v0.3.5
