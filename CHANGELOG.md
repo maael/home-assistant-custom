@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+### Added
+
+- Manual GitHub Actions release dispatch that validates a requested tag, builds the bundle, creates the tag, and uploads the release asset.
+
 ## [0.6.0] - 2026-11-25
 
 ### Added

@@ -140,6 +140,18 @@ See [Docker Status Badge documentation](docs/docker-status-badge.md) for all ent
 
 This installs the same shared bundle used by HACS.
 
+## Creating a release
+
+Releases can be created from the GitHub Actions **Release** workflow:
+
+1. Update the repository version, for example with `npm version 0.7.0 --no-git-tag-version`.
+2. Finalize the matching changelog entry and merge those changes into `main`.
+3. Open **Actions → Release → Run workflow** and enter the matching tag, such as `v0.7.0`.
+
+The workflow always checks out the latest default branch, verifies that the requested tag matches `package.json`, runs the tests and production build, creates the tag if needed, and publishes a GitHub prerelease containing `home-assistant-custom.js`. A rerun may reuse a tag only when it already points to the same commit.
+
+Pushing a matching `v*` tag manually remains supported and runs the same validation and release steps. The workflow deliberately does not change versions or create version-bump commits.
+
 ## Development
 
 Requires Node.js 22.
