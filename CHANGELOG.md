@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Changed
+
+- Moved the UGREEN Docker backend integration to `maael/home-assistant-custom-integration`, a dedicated HACS Integration repository. This repository continues to distribute the source-agnostic Docker Status Badge.
+
 ## [0.7.0] - 2026-11-27
 
 ### Added
