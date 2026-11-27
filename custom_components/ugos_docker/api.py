@@ -7,11 +7,8 @@ from __future__ import annotations
 import asyncio
 import base64
 import json
-import logging
 from collections.abc import Mapping
 from typing import Any
-from urllib.parse import urlencode
-
 import aiohttp
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric import padding
@@ -21,7 +18,6 @@ from homeassistant.helpers.aiohttp_client import async_create_clientsession
 
 from .const import CONF_HOST, CONF_PORT, CONF_USE_SSL, CONF_VERIFY_SSL
 
-_LOGGER = logging.getLogger(__name__)
 _TIMEOUT = aiohttp.ClientTimeout(total=20)
 
 

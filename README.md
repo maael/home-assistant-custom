@@ -13,7 +13,7 @@ A single HACS Dashboard repository for independently configurable Home Assistant
 | Media Download Card | `custom:media-download-card` | Radarr/Sonarr queue artwork joined to qBittorrent progress and status. | [Configuration](docs/media-download-card.md) |
 | Fullscreen Toggle Badge | `custom:fullscreen-toggle-badge` | Compact fullscreen toggle with separate text, icons, and icon colours for each state. | [Configuration](docs/fullscreen-toggle-badge.md) |
 | Docker Status Badge | `custom:docker-status-badge` | Docker container totals, updates, errors, and health from existing Home Assistant entities. | [Configuration](docs/docker-status-badge.md) |
-| UGREEN Docker integration | `ugos_docker` | Read-only UGOS Docker update and container status integration. Manual backend installation required. | [Configuration](docs/ugos-docker.md) |
+| UGREEN Docker integration | `ugos_docker` | Read-only UGOS Docker update and container status integration. Manual backend installation required. | [Overview](docs/ugos-docker.md) · [Setup](docs/ugos-docker-setup.md) |
 
 ## Install with HACS
 

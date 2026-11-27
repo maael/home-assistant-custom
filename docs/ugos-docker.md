@@ -4,6 +4,8 @@
 
 ## Install and configure
 
+For a step-by-step Home Assistant OS/manual installation guide, prerequisites, credential explanation, and troubleshooting, see [UGREEN Docker setup](ugos-docker-setup.md).
+
 This repository's HACS entry is a **Dashboard** repository. HACS cannot install this Python integration from that entry without breaking existing frontend distribution, so install it manually:
 
 1. Copy `custom_components/ugos_docker` into `<Home Assistant config>/custom_components/ugos_docker`.
