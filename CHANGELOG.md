@@ -5,6 +5,7 @@
 ### Added
 
 - Manual GitHub Actions release dispatch that validates a requested tag, builds the bundle, creates the tag, and uploads the release asset.
+- Read-only UGREEN Docker backend integration (`ugos_docker`) with native UGOS update counts, session renewal, config/options/reauth flows, coordinator entities, diagnostics, and manual-install documentation.
 
 ## [0.6.0] - 2026-11-25
 
