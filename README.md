@@ -13,6 +13,7 @@ A single HACS Dashboard repository for independently configurable Home Assistant
 | Media Download Card | `custom:media-download-card` | Radarr/Sonarr queue artwork joined to qBittorrent progress and status. | [Configuration](docs/media-download-card.md) |
 | Fullscreen Toggle Badge | `custom:fullscreen-toggle-badge` | Compact fullscreen toggle with separate text, icons, and icon colours for each state. | [Configuration](docs/fullscreen-toggle-badge.md) |
 | Docker Status Badge | `custom:docker-status-badge` | Docker container totals, updates, errors, and health from existing Home Assistant entities. | [Configuration](docs/docker-status-badge.md) |
+| UGREEN Docker integration | `ugos_docker` | Read-only UGOS Docker update and container status integration. Manual backend installation required. | [Configuration](docs/ugos-docker.md) |
 
 ## Install with HACS
 
@@ -129,7 +130,7 @@ updates_entity: sensor.wud_updates_available
 errors_entity: sensor.wud_errors
 ```
 
-See [Docker Status Badge documentation](docs/docker-status-badge.md) for all entity, icon, colour, zero-visibility, health, and action options.
+See [Docker Status Badge documentation](docs/docker-status-badge.md) for all entity, icon, colour, zero-visibility, health, and action options. For native UGOS update counts (instead of WUD), install [UGREEN Docker](docs/ugos-docker.md) and replace the entity IDs in this configuration.
 
 ## Manual bundle installation
 
