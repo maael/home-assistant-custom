@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## [0.7.0] - 2026-11-27
+
 ### Added
 
 - Manual GitHub Actions release dispatch that validates a requested tag, builds the bundle, creates the tag, and uploads the release asset.
@@ -136,6 +138,7 @@
 - Responsive poster grid, progress/status display, polling, partial-failure handling, and configuration options.
 - Synthetic fixtures, transformation and mocked-browser tests, CI, release automation, and installation documentation.
 
+[0.7.0]: https://github.com/maael/home-assistant-custom/releases/tag/v0.7.0
 [0.6.0]: https://github.com/maael/home-assistant-custom/releases/tag/v0.6.0
 [0.5.0]: https://github.com/maael/home-assistant-custom/releases/tag/v0.5.0
 [0.4.0]: https://github.com/maael/home-assistant-custom/releases/tag/v0.4.0
