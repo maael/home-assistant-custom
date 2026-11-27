@@ -184,11 +184,13 @@ The actual badge uses MDI icons; the descriptions below show the content order.
 
 The badge updates whenever Home Assistant supplies new entity states. It uses tabular numerals and removes separators and spacing when adjacent content is hidden.
 
-## Using WUD REST sensors
+## Data sources: WUD, UGREEN Docker, or others
 
 WUD can expose counts through REST endpoints, and Home Assistant REST sensors can turn those responses into entities such as `sensor.wud_containers`, `sensor.wud_updates_available`, `sensor.wud_errors`, and `sensor.wud_up_to_date`. Configure and verify those sensors separately, then reference their entity IDs in this badge.
 
-The badge does not require a particular WUD URL or sensor implementation. Existing template, REST, MQTT, or other numeric Home Assistant entities work equally well.
+For native UGREEN OS Docker counts, install [UGREEN Docker](https://github.com/maael/home-assistant-custom-integration) through HACS as an **Integration** and select its container total, container update, and container error sensors in this badge. Keep its project-update sensor separate because project and container scopes can overlap.
+
+The badge does not require a particular WUD URL, UGREEN NAS, or sensor implementation. Existing template, REST, MQTT, or other numeric Home Assistant entities work equally well.
 
 ## Visual editor
 
